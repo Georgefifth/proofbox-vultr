@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" rx="10" fill="#090B0E" stroke="#212936" stroke-width="2"/>
+  <rect x="80" y="60" width="640" height="95" rx="6" fill="#10141B" stroke="#F59E0B" stroke-width="2"/>
+  <text x="110" y="100" fill="#FBBF24" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700">LAYER 01 // NEMOTRON 3.5 SAFETY GATE + AST POLICY</text>
+  <text x="110" y="128" fill="#94A3B8" font-family="JetBrains Mono, monospace" font-size="12">Audits prompts &amp; syscalls before container spawn</text>
+
+  <rect x="80" y="185" width="640" height="95" rx="6" fill="#10141B" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="110" y="225" fill="#38BDF8" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700">LAYER 02 // DEEPSEEK V4.1 &amp; GLM 5.3 SELF-HEALING PLANNER</text>
+  <text x="110" y="253" fill="#94A3B8" font-family="JetBrains Mono, monospace" font-size="12">Synthesizes Python / Browser code &amp; auto-repairs runtime errors</text>
+
+  <rect x="80" y="310" width="640" height="95" rx="6" fill="#10141B" stroke="#10B981" stroke-width="2"/>
+  <text x="110" y="350" fill="#34D399" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700">LAYER 03 // UNPRIVILEGED DOCKER SANDBOX (CGROUPV2 + NETNS)</text>
+  <text x="110" y="378" fill="#94A3B8" font-family="JetBrains Mono, monospace" font-size="12">--network=none · --cap-drop=ALL · uid=65534 · 0 Host Secrets</text>
+
+  <rect x="80" y="435" width="640" height="95" rx="6" fill="#10141B" stroke="#10B981" stroke-width="2"/>
+  <text x="110" y="475" fill="#10B981" font-family="JetBrains Mono, monospace" font-size="16" font-weight="700">LAYER 04 // QWEN 3.8 27B VERIFIER &amp; HMAC-SHA256 NOTARY</text>
+  <text x="110" y="503" fill="#94A3B8" font-family="JetBrains Mono, monospace" font-size="12">Verifies output artifacts, confirms container teardown &amp; seals receipt</text>
+</svg>

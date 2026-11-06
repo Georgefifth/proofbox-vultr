@@ -1,0 +1,198 @@
+{
+  "base": "http://127.0.0.1:8000",
+  "browser": "chromium",
+  "headed": false,
+  "startedAt": "2026-11-06T15:24:16.528Z",
+  "finishedAt": "2026-11-06T15:25:03.454Z",
+  "summary": {
+    "total": 12,
+    "pass": 12,
+    "fail": 0
+  },
+  "results": [
+    {
+      "viewport": "desktop",
+      "id": "01-landing-telemetry",
+      "title": "Landing page renders forensic workbench, 6-stage pipeline, and zero overflow",
+      "status": "pass",
+      "ms": 999,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/01-landing-telemetry-landing-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "02-code-sandbox-e2e",
+      "title": "Pattern A: Air-Gapped Python Sandbox execution + HMAC-SHA256 receipt verification",
+      "status": "pass",
+      "ms": 7569,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/02-code-sandbox-e2e-verified-receipt-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "03-redteam-containment",
+      "title": "Pattern C: Mandatory Containment Moment blocks secret exfiltration, /etc/shadow, and metadata SSRF",
+      "status": "pass",
+      "ms": 4155,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/03-redteam-containment-containment-proven-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "04-browser-sandbox-and-ssrf",
+      "title": "Pattern B: SSRF Guard blocks 169.254.169.254 and allows public URL DOM inspection",
+      "status": "pass",
+      "ms": 5862,
+      "error": null,
+      "errors": [],
+      "warnings": [
+        {
+          "kind": "http",
+          "level": "warn",
+          "text": "400 http://127.0.0.1:8000/api/execute"
+        },
+        {
+          "kind": "console",
+          "level": "warn",
+          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+        }
+      ],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/04-browser-sandbox-and-ssrf-ssrf-blocked-desktop.png",
+        "evidence/stage-3-qa/local/screens/04-browser-sandbox-and-ssrf-browser-verified-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "05-empty-and-validation",
+      "title": "Empty state, inline invalid input validation, and preset recovery",
+      "status": "pass",
+      "ms": 848,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/05-empty-and-validation-empty-state-desktop.png",
+        "evidence/stage-3-qa/local/screens/05-empty-and-validation-invalid-input-desktop.png"
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "id": "06-navigation-and-ledger",
+      "title": "Navigate Red-Team Containment Matrix and verify Audit Ledger signatures",
+      "status": "pass",
+      "ms": 871,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/06-navigation-and-ledger-redteam-matrix-desktop.png",
+        "evidence/stage-3-qa/local/screens/06-navigation-and-ledger-audit-ledger-desktop.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "01-landing-telemetry",
+      "title": "Landing page renders forensic workbench, 6-stage pipeline, and zero overflow",
+      "status": "pass",
+      "ms": 1037,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/01-landing-telemetry-landing-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "02-code-sandbox-e2e",
+      "title": "Pattern A: Air-Gapped Python Sandbox execution + HMAC-SHA256 receipt verification",
+      "status": "pass",
+      "ms": 11066,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/02-code-sandbox-e2e-verified-receipt-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "03-redteam-containment",
+      "title": "Pattern C: Mandatory Containment Moment blocks secret exfiltration, /etc/shadow, and metadata SSRF",
+      "status": "pass",
+      "ms": 4603,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/03-redteam-containment-containment-proven-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "04-browser-sandbox-and-ssrf",
+      "title": "Pattern B: SSRF Guard blocks 169.254.169.254 and allows public URL DOM inspection",
+      "status": "pass",
+      "ms": 7702,
+      "error": null,
+      "errors": [],
+      "warnings": [
+        {
+          "kind": "http",
+          "level": "warn",
+          "text": "400 http://127.0.0.1:8000/api/execute"
+        },
+        {
+          "kind": "console",
+          "level": "warn",
+          "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+        }
+      ],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/04-browser-sandbox-and-ssrf-ssrf-blocked-mobile.png",
+        "evidence/stage-3-qa/local/screens/04-browser-sandbox-and-ssrf-browser-verified-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "05-empty-and-validation",
+      "title": "Empty state, inline invalid input validation, and preset recovery",
+      "status": "pass",
+      "ms": 964,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/05-empty-and-validation-empty-state-mobile.png",
+        "evidence/stage-3-qa/local/screens/05-empty-and-validation-invalid-input-mobile.png"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "id": "06-navigation-and-ledger",
+      "title": "Navigate Red-Team Containment Matrix and verify Audit Ledger signatures",
+      "status": "pass",
+      "ms": 1035,
+      "error": null,
+      "errors": [],
+      "warnings": [],
+      "screenshots": [
+        "evidence/stage-3-qa/local/screens/06-navigation-and-ledger-redteam-matrix-mobile.png",
+        "evidence/stage-3-qa/local/screens/06-navigation-and-ledger-audit-ledger-mobile.png"
+      ]
+    }
+  ]
+}

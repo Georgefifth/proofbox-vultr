@@ -1,0 +1,12 @@
+# ProofBox Stage 3 QA Scenarios
+
+## Scenario Inventory & Priority Ranking
+
+| ID | Priority | Title | User Flow & Business Outcome Assertions |
+|---|---|---|---|
+| `01-landing-telemetry` | **P0** | First Visit, Vultr Telemetry & Zero Overflow | Open landing page -> verify document title, 6-Stage Containment Pipeline visibility, live Vultr VM & Inference telemetry strip, and zero horizontal overflow (`scrollWidth <= innerWidth + 1`). |
+| `02-code-sandbox-e2e` | **P0** | Pattern A: Air-Gapped Python Sandbox Dispatch & Cryptographic Receipt Verification | Select Pattern A preset -> click `Dispatch to Isolated Sandbox` -> wait for real container execution -> assert `SELF-HEALED & VERIFIED EXECUTION RECEIPT` / `VERIFIED SANDBOX EXECUTION RECEIPT`, `0 Secrets Mounted`, `LIFECYCLE: DESTROYED ✓`, SVG chart artifact rendered, and click `Verify Receipt Signature` -> assert `✓ HMAC-SHA256 SIGNATURE VERIFIED INTACT`. |
+| `03-redteam-containment` | **P0** | Pattern C: Mandatory Containment Moment (Secret Exfiltration + Metadata SSRF Blocked) | Select `Containment Moment: Secret Exfiltration + Metadata SSRF Probe` -> click `Dispatch to Isolated Sandbox` -> assert `THREAT CONTAINED & NEUTRALIZED — HOST INTEGRITY 100% INTACT`, stdout proves `VULTR_API_KEY present: False`, `/etc/shadow` blocked (`PermissionError`), and `169.254.169.254` blocked (`Network is unreachable`). |
+| `04-browser-sandbox-and-ssrf` | **P1** | Pattern B: Isolated Browser Inspection & SSRF Guard Rejection | Switch to `Pattern B · Browser`, enter `http://169.254.169.254/v1.json` -> click Dispatch -> assert SSRF Guard blocks request (`SANDBOX DISPATCH ERROR` / `Blocked internal/metadata hostname`). Then enter `https://example.com` -> click Dispatch -> assert `VERIFIED SANDBOX EXECUTION RECEIPT` with live DOM & security header audit. |
+| `05-empty-and-validation` | **P1** | Empty State, Invalid Input Validation & Recovery | Click `Clear / Empty State` -> assert `No Active Execution Receipt Selected` empty state -> click `Dispatch to Isolated Sandbox` with empty prompt -> assert `FIELD_REQUIRED: Task prompt cannot be empty` inline error -> click quick-load preset button to recover. |
+| `06-navigation-and-ledger` | **P2** | Multi-View Navigation (`Red-Team Matrix` & `Audit Ledger`) + Keyboard Focus | Navigate to `2. Red-Team Containment Matrix` -> verify 4 adversarial vectors -> navigate to `3. Audit Ledger` -> click `Verify All Ledger Signatures` -> assert `✓ LEDGER INTEGRITY VERIFIED` and open a historical receipt back in the Workbench. |

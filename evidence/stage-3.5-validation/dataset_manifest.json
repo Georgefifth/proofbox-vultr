@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-11-06T15:34:10.664727+00:00",
+  "targetDeployment": "http://45.32.110.141",
+  "externalSources": [
+    {
+      "id": "src-vultr-models",
+      "name": "Vultr Serverless Inference Live Model Catalog",
+      "url": "https://api.vultrinference.com/v1/models",
+      "license": "Public API Metadata",
+      "sha256": "ec194459bd1dc24afc732cff7c8284e8c5ca5271c16cece33c7ff917d9a08ba7",
+      "groundTruthCount": 33
+    },
+    {
+      "id": "src-iana-example",
+      "name": "RFC 2606 / IANA Reserved Example Domain",
+      "url": "https://example.com",
+      "license": "RFC 2606 Public Test Domain",
+      "groundTruth": {
+        "status": 200,
+        "title": "Example Domain",
+        "h1": "Example Domain"
+      }
+    },
+    {
+      "id": "src-owasp-llm-top10",
+      "name": "OWASP Top 10 for LLM Applications & Agentic Containment Probes",
+      "url": "https://genai.owasp.org/llm-top-10/",
+      "license": "CC-BY-SA-4.0",
+      "groundTruth": "100% containment of secret exfiltration, SSRF, /etc/shadow, and OOM probes"
+    }
+  ]
+}

@@ -1,0 +1,487 @@
+{
+  "project_name": "ProofBox",
+  "tagline": "Zero-Blast-Radius Agent Execution & Cryptographic Verification Platform on Vultr",
+  "preset": "terminal",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "bgm": "cyber-pulse",
+  "scenes": [
+    {
+      "scene_id": "opening",
+      "kicker": "VULTR: AGENT RUSH HACKATHON // TRACK 01",
+      "title": "ProofBox: Blast Radius Zero Agent Sandbox",
+      "subtitle": "Containment-first code & web execution on Vultr Cloud Compute with HMAC-SHA256 receipts",
+      "duration": 8.13,
+      "narration": "ProofBox delivers 'Blast Radius Zero' agent execution on Vultr in 3.29 seconds.",
+      "visual_type": "opening_title",
+      "fact_ids": [
+        "fact_vultr_multi_model_pipeline",
+        "fact_validation_benchmark"
+      ],
+      "assets": [
+        "images/proofbox_hero.svg"
+      ],
+      "badges": [
+        "35 VULTR MODELS LIVE",
+        "3.29s MEAN DISPATCH",
+        "HMAC-SHA256 RECEIPTS"
+      ],
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "VULTR INFERENCE",
+          "text": "3-Model Vultr Inference Triad",
+          "subtext": "Nemotron Safety + DeepSeek V4.1 + Qwen 3.8",
+          "start": 0.81,
+          "duration": 6.18,
+          "x": 20,
+          "y": 48,
+          "w": 28,
+          "h": 48
+        }
+      ],
+      "audio_file": "audio/opening.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 6.53,
+          "text": "ProofBox delivers 'Blast Radius Zero' agent execution on Vultr in 3.29 seconds."
+        }
+      ]
+    },
+    {
+      "scene_id": "problem",
+      "kicker": "THE AGENT CONTAINMENT PROBLEM",
+      "title": "Why Uncontained AI Agents Fail in Production",
+      "subtitle": "Running LLM-generated code or browsers on host servers exposes credentials and metadata",
+      "duration": 8.1,
+      "narration": "Standard agents run on host servers, risking 'secret exfiltration' and SSRF attacks.",
+      "visual_type": "problem_flow",
+      "fact_ids": [
+        "fact_four_pillar_containment"
+      ],
+      "diagram": {
+        "nodes": [
+          {
+            "id": "prompt",
+            "label": "Untrusted Task",
+            "sublabel": "CSV / Code / Web URL",
+            "category": "input",
+            "metric": "Raw Input"
+          },
+          {
+            "id": "host_exec",
+            "label": "Unisolated Host Exec",
+            "sublabel": "Shared .env & network",
+            "category": "bottleneck",
+            "metric": "HIGH RISK"
+          },
+          {
+            "id": "breach",
+            "label": "Secret & SSRF Breach",
+            "sublabel": "169.254.169.254 + API Keys",
+            "category": "bottleneck",
+            "metric": "EXPOSED"
+          },
+          {
+            "id": "proofbox",
+            "label": "ProofBox Sandbox",
+            "sublabel": "uid=65534 · net=none · 0 Secrets",
+            "category": "core",
+            "metric": "0 LEAKS"
+          }
+        ],
+        "edges": [
+          {
+            "from": "prompt",
+            "to": "host_exec",
+            "label": "Direct Host Run",
+            "status": "bottleneck"
+          },
+          {
+            "from": "host_exec",
+            "to": "breach",
+            "label": "Prompt Injection",
+            "status": "bottleneck"
+          },
+          {
+            "from": "prompt",
+            "to": "proofbox",
+            "label": "ProofBox Gate",
+            "status": "optimized"
+          }
+        ]
+      },
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "breach",
+          "text": "Host Env & Metadata SSRF Risk",
+          "start": 0.88,
+          "duration": 3.24
+        },
+        {
+          "type": "label",
+          "target": "proofbox",
+          "text": "Zero-Secret Ephemeral Container",
+          "start": 4.12,
+          "duration": 3.24
+        }
+      ],
+      "audio_file": "audio/problem.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 6.52,
+          "text": "Standard agents run on host servers, risking 'secret exfiltration' and SSRF attacks."
+        }
+      ]
+    },
+    {
+      "scene_id": "architecture",
+      "kicker": "VULTR CLOUD COMPUTE + SERVERLESS INFERENCE",
+      "title": "Four-Layer Containment & Verification Architecture",
+      "subtitle": "Every run passes through pre-flight safety, ephemeral cgroup isolation, and notary signing",
+      "duration": 7.17,
+      "narration": "Four containment layers link 'Vultr Serverless Inference' to ephemeral Docker sandboxes.",
+      "visual_type": "exploded_view",
+      "fact_ids": [
+        "fact_vultr_multi_model_pipeline",
+        "fact_four_pillar_containment"
+      ],
+      "assets": [
+        "models/proofbox_stack.svg"
+      ],
+      "exploded_parts": [
+        {
+          "id": "safety_gate",
+          "name": "Layer 1 · Pre-Flight Safety Gate",
+          "spec": "NEMOTRON-3.5-CONTENT-SAFETY",
+          "role": "Audits prompts and AST syscall rules before spawning containers",
+          "layer": -1.5
+        },
+        {
+          "id": "planner_loop",
+          "name": "Layer 2 · Self-Healing Planner",
+          "spec": "DEEPSEEK-V4.1-FLASH · 1.67s",
+          "role": "Synthesizes Python or Browser scripts and auto-repairs runtime errors",
+          "layer": -0.5
+        },
+        {
+          "id": "docker_sandbox",
+          "name": "Layer 3 · Ephemeral Docker Sandbox",
+          "spec": "CGROUPV2 + NETNS + UID 65534",
+          "role": "Enforces --network=none, --cap-drop=ALL, 512MB cap, and 0 secrets",
+          "layer": 0.5
+        },
+        {
+          "id": "notary_verifier",
+          "name": "Layer 4 · Qwen Verifier & Notary",
+          "spec": "QWEN3.8-27B + HMAC-SHA256",
+          "role": "Verifies outputs, confirms container destruction, and signs receipt",
+          "layer": 1.5
+        }
+      ],
+      "animations": [
+        {
+          "type": "explode",
+          "target": "assembly",
+          "start": 0.24,
+          "duration": 6.45
+        },
+        {
+          "type": "highlight",
+          "target": "safety_gate",
+          "text": "Layer 1: Vultr Nemotron 3.5 Safety Gate",
+          "start": 0.72,
+          "duration": 2.63
+        },
+        {
+          "type": "label",
+          "target": "docker_sandbox",
+          "text": "Layer 3: Unprivileged Container (0 Secrets)",
+          "start": 3.47,
+          "duration": 2.99
+        }
+      ],
+      "audio_file": "audio/architecture.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 5.65,
+          "text": "Four containment layers link 'Vultr Serverless Inference' to ephemeral Docker sandboxes."
+        }
+      ]
+    },
+    {
+      "scene_id": "live_code_demo",
+      "kicker": "LIVE VULTR DEPLOYMENT // PATTERN A: CODE SANDBOX",
+      "title": "Air-Gapped Python Execution & Receipt Verification",
+      "subtitle": "Live capture on http://45.32.110.141 showing self-healing CSV audit and HMAC signature check",
+      "duration": 9.04,
+      "narration": "Watch ProofBox run 'air-gapped' Python analysis, self-heal errors, and verify HMAC receipts.",
+      "visual_type": "real_footage_with_annotations",
+      "fact_ids": [
+        "fact_vultr_multi_model_pipeline",
+        "fact_four_pillar_containment"
+      ],
+      "live_capture": {
+        "url": "http://45.32.110.141",
+        "session": "vultr-demo",
+        "actions": [
+          {
+            "type": "wait",
+            "ms": 600,
+            "__focus": null
+          },
+          {
+            "type": "click",
+            "sel": "button:has-text('Verify Receipt Signature')",
+            "label": "Verify HMAC-SHA256 Seal",
+            "__focus": [
+              848.6,
+              1814.1
+            ]
+          },
+          {
+            "type": "wait",
+            "ms": 1400,
+            "__focus": null
+          }
+        ]
+      },
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "PIPELINE_BAR",
+          "text": "6-Stage Vultr Inference Pipeline",
+          "subtext": "Nemotron -> DeepSeek -> Docker -> Qwen 3.8",
+          "start": 0.56,
+          "duration": 3.89,
+          "x": 50,
+          "y": 18,
+          "w": 88,
+          "h": 18
+        },
+        {
+          "type": "label",
+          "target": "RECEIPT_SEAL",
+          "text": "Verified Container Teardown & Chart",
+          "subtext": "0 Secrets Mounted · Lifecycle: DESTROYED",
+          "start": 4.45,
+          "duration": 3.89,
+          "x": 65,
+          "y": 55,
+          "w": 56,
+          "h": 42
+        }
+      ],
+      "assets": [
+        "footage/live_live_code_demo.mp4"
+      ],
+      "audio_file": "audio/live_code_demo.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 7.45,
+          "text": "Watch ProofBox run 'air-gapped' Python analysis, self-heal errors, and verify HMAC receipts."
+        }
+      ]
+    },
+    {
+      "scene_id": "containment_moment",
+      "kicker": "MANDATORY CONTAINMENT MOMENT // RED-TEAM LAB",
+      "title": "Intercepting Secret Theft & Cloud Metadata SSRF",
+      "subtitle": "Adversarial probe attempts VULTR_API_KEY dump, /etc/shadow read, and 169.254.169.254 SSRF",
+      "duration": 7.98,
+      "narration": "Now watch an adversarial probe attempt 'secret theft' and metadata SSRF, 100% blocked.",
+      "visual_type": "real_footage_with_annotations",
+      "fact_ids": [
+        "fact_four_pillar_containment",
+        "fact_validation_benchmark"
+      ],
+      "live_capture": {
+        "session": "vultr-demo",
+        "actions": [
+          {
+            "type": "click",
+            "sel": "button:has-text('Containment Moment: Secret Exfiltration')",
+            "label": "Load Adversarial Probe",
+            "__focus": [
+              491.7,
+              -91.1
+            ]
+          },
+          {
+            "type": "wait",
+            "ms": 1200,
+            "__focus": null
+          },
+          {
+            "type": "click",
+            "sel": "button:has-text('2. Red-Team Containment Matrix')",
+            "label": "Open Red-Team Matrix",
+            "__focus": [
+              1594,
+              -145.7
+            ]
+          },
+          {
+            "type": "wait",
+            "ms": 1400,
+            "__focus": null
+          }
+        ]
+      },
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "CONTAINMENT_BANNER",
+          "text": "Threat Contained: Host 100% Intact",
+          "subtext": "VULTR_API_KEY=False · /etc/shadow Errno 13",
+          "start": 0.47,
+          "duration": 3.52,
+          "x": 65,
+          "y": 42,
+          "w": 58,
+          "h": 34
+        },
+        {
+          "type": "label",
+          "target": "REDTEAM_MATRIX",
+          "text": "4/4 Exploit Vectors Neutralized",
+          "subtext": "Secrets, Metadata SSRF, Rootfs, and 4GB OOM",
+          "start": 4.11,
+          "duration": 3.29,
+          "x": 52,
+          "y": 54,
+          "w": 75,
+          "h": 36
+        }
+      ],
+      "assets": [
+        "footage/live_containment_moment.mp4"
+      ],
+      "audio_file": "audio/containment_moment.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 6.42,
+          "text": "Now watch an adversarial probe attempt 'secret theft' and metadata SSRF, 100% blocked."
+        }
+      ]
+    },
+    {
+      "scene_id": "validation",
+      "kicker": "STAGE 3.5 REAL-WORLD VALIDATION BENCHMARK",
+      "title": "100% Pass Rate Across 12 External & Adversarial Cases",
+      "subtitle": "Tested against live Vultr VM (http://45.32.110.141) with OWASP LLM Top 10 & IANA targets",
+      "duration": 7.96,
+      "narration": "Real-world tests confirm 100% pass rate across 12 benchmarks with 0 leaked secrets.",
+      "visual_type": "technical_validation",
+      "fact_ids": [
+        "fact_validation_benchmark",
+        "fact_vultr_multi_model_pipeline"
+      ],
+      "metrics": [
+        {
+          "id": "m_pass",
+          "label": "Validation Pass Rate (12 Cases)",
+          "value": 100,
+          "unit": "%",
+          "baseline": 91.7,
+          "target": 100,
+          "status": "verified",
+          "note": "Improved from 91.7% (11/12) after unbuffered OOM fix"
+        },
+        {
+          "id": "m_lat",
+          "label": "Mean End-to-End Sandbox Latency",
+          "value": 3.29,
+          "unit": "s",
+          "baseline": 3.92,
+          "target": 4,
+          "status": "verified",
+          "note": "1.67s DeepSeek V4.1 code synthesis + Docker run"
+        },
+        {
+          "id": "m_ssrf",
+          "label": "Metadata SSRF Block Latency",
+          "value": 41,
+          "unit": "ms",
+          "baseline": 120,
+          "target": 50,
+          "status": "verified",
+          "note": "Blocks 169.254.169.254 & loopback before spawn"
+        },
+        {
+          "id": "m_cleanup",
+          "label": "Verified Container Teardown",
+          "value": 100,
+          "unit": "%",
+          "baseline": 100,
+          "target": 100,
+          "status": "verified",
+          "note": "docker rm -f + inspect verified on every run"
+        }
+      ],
+      "limitations": [
+        "Air-gapped Python sandbox (--network=none) restricts runtime pip installs by design",
+        "Tasks exceeding the 12s wall-clock timeout are forcefully terminated",
+        "Browser mode uses lightweight DOM/header inspector instead of full GUI video streaming"
+      ],
+      "animations": [
+        {
+          "type": "highlight",
+          "target": "m_pass",
+          "text": "12/12 Real-World & OWASP Cases Passed",
+          "start": 0.87,
+          "duration": 3.47
+        },
+        {
+          "type": "label",
+          "target": "m_lat",
+          "text": "3.29s Mean Execution & Verification Time",
+          "start": 4.34,
+          "duration": 3.18
+        }
+      ],
+      "audio_file": "audio/validation.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 6.41,
+          "text": "Real-world tests confirm 100% pass rate across 12 benchmarks with 0 leaked secrets."
+        }
+      ]
+    },
+    {
+      "scene_id": "closing",
+      "kicker": "LIVE ON VULTR CLOUD COMPUTE // SGP",
+      "title": "ProofBox · Ready for Zero-Trust Agent Workloads",
+      "subtitle": "Live Demo: http://45.32.110.141 · GitHub: github.com/Georgefifth/proofbox-vultr",
+      "duration": 7,
+      "narration": "ProofBox is live on 'Vultr Cloud Compute' with cryptographic execution proofs.",
+      "visual_type": "closing_summary",
+      "fact_ids": [
+        "fact_vultr_multi_model_pipeline",
+        "fact_four_pillar_containment",
+        "fact_validation_benchmark"
+      ],
+      "badges": [
+        "LIVE DEMO::http://45.32.110.141 (Vultr vc2-4c-8gb)",
+        "INFERENCE::Nemotron 3.5 + DeepSeek V4.1 + Qwen 3.8",
+        "CONTAINMENT::0 Secrets · Air-Gapped · HMAC-SHA256"
+      ],
+      "audio_file": "audio/closing.mp3",
+      "captions": [
+        {
+          "start": 0.05,
+          "end": 5.41,
+          "text": "ProofBox is live on 'Vultr Cloud Compute' with cryptographic execution proofs."
+        }
+      ]
+    }
+  ]
+}

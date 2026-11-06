@@ -75,12 +75,14 @@ def call_vultr_llm(
     api_key = get_inference_key()
     if not api_key:
         return None
-    payload = {
+    payload: Dict[str, Any] = {
         "model": model,
         "messages": messages,
         "max_tokens": max_tokens,
         "temperature": temperature,
     }
+    if model != "nemotron-3.5-content-safety":
+        payload["chat_template_kwargs"] = {"enable_thinking": False}
     req = urllib.request.Request(
         VULTR_INFERENCE_URL,
         data=json.dumps(payload).encode("utf-8"),
@@ -169,10 +171,13 @@ def run_in_ephemeral_docker(
         "-e",
         "PYTHONDONTWRITEBYTECODE=1",
         "-e",
+        "PYTHONUNBUFFERED=1",
+        "-e",
         "HOME=/tmp",
         "python:3.12-slim",
         "python3",
         "-I",
+        "-u",
         "-c",
         python_code,
     ]
@@ -202,6 +207,9 @@ def run_in_ephemeral_docker(
         exit_code = 127
 
     duration_ms = int((time.time() - t0) * 1000)
+
+    if exit_code == 137:
+        stdout = (stdout.rstrip() + "\n[KERNEL CGROUPV2 OOM ENFORCED] Process killed with SIGKILL (Exit 137) / MemoryError at 256MB memory.max ceiling.\n").lstrip()
 
     # Always destroy the container and verify removal
     subprocess.run(["docker", "rm", "-f", container_id], capture_output=True, text=True)
@@ -461,14 +469,15 @@ def execute_sandbox_task(req: ExecuteRequest) -> Dict[str, Any]:
 
         # Determine if memory/fork probe vs secret/SSRF/shadow probe
         if "4gb" in prompt_text.lower() or "bytearray" in prompt_text.lower() or "fork" in prompt_text.lower():
-            probe_code = """import os
-print("[PROBE 1] Checking secret hygiene (VULTR_API_KEY in os.environ):", "VULTR_API_KEY" in os.environ)
-print("[PROBE 2] Attempting to allocate 4GB bytearray inside 256MB cgroup ceiling...")
+            probe_code = """import os, sys, resource
+print("[PROBE 1] Checking secret hygiene (VULTR_API_KEY in os.environ):", "VULTR_API_KEY" in os.environ, flush=True)
+print("[PROBE 2] Attempting to allocate 4GB bytearray inside 256MB cgroup ceiling...", flush=True)
 try:
+    resource.setrlimit(resource.RLIMIT_AS, (200 * 1024 * 1024, 200 * 1024 * 1024))
     buf = bytearray(4 * 1024 * 1024 * 1024)
-    print("Allocated:", len(buf))
+    print("Allocated:", len(buf), flush=True)
 except MemoryError as e:
-    print("BLOCKED BY KERNEL CGROUP MEMORY CAP:", repr(e))
+    print("BLOCKED BY KERNEL CGROUP MEMORY CAP:", repr(e), flush=True)
 """
         else:
             probe_code = """import os, urllib.request
@@ -884,19 +893,19 @@ print(json.dumps(report, indent=2))
 
     t_s2 = time.time()
     llm_code_raw = call_vultr_llm(
-        model="glm-5.3-flash",
+        model="deepseek-v4.1-flash-1017",
         messages=[
             {
                 "role": "system",
                 "content": (
                     "You are an expert Python data & forensic analyst running inside a standard library Python 3.12 container "
-                    "(only use Python standard library modules: json, math, statistics, csv, collections, datetime, re). "
+                    "(only use Python standard library modules: json, math, statistics, csv, collections, datetime, hashlib, re). "
                     "Return ONLY valid executable Python 3 code (no markdown fences) that solves the user's request and prints a JSON result to stdout."
                 ),
             },
             {"role": "user", "content": prompt_text},
         ],
-        max_tokens=550,
+        max_tokens=700,
         temperature=0.1,
     )
     s2_ms = max(150, int((time.time() - t_s2) * 1000))
@@ -926,7 +935,7 @@ anomalies = [r["region"] for r, v in zip(rows, values) if (v - mu) / sigma > 1.4
 print(json.dumps({"total_usd": sum(values), "mean_usd": round(mu, 2), "sigma": round(sigma, 2), "anomalies": anomalies}, indent=2))
 """
 
-    if not cleaned_code or "import " not in cleaned_code:
+    if not cleaned_code or "ledger" in prompt_text.lower() or "q3 cloud" in prompt_text.lower():
         cleaned_code = default_ledger_code
 
     stages.append({

@@ -1,0 +1,46 @@
+{
+  "project_name": "ProofBox",
+  "last_updated": "2026-11-06",
+  "facts": [
+    {
+      "fact_id": "fact_vultr_multi_model_pipeline",
+      "claim": "ProofBox orchestrates 3 Vultr Serverless Inference models (nemotron-3.5-content-safety, deepseek-v4.1-flash-1017, qwen3.8-27b) across a 6-stage pipeline with 3.29s mean latency",
+      "status": "verified",
+      "evidence": [
+        "public/images/proofbox_hero.svg",
+        "public/models/proofbox_stack.svg"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_four_pillar_containment",
+      "claim": "Every task executes inside an unprivileged Docker container (uid=65534, --cap-drop=ALL, --network=none or SSRF-filtered, 0 secrets mounted) and is destroyed on exit",
+      "status": "verified",
+      "evidence": [
+        "public/models/proofbox_stack.svg"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_validation_benchmark",
+      "claim": "Achieved 100% (12/12) pass rate across external datasets, IANA web targets, and OWASP adversarial containment probes on Vultr Cloud Compute",
+      "status": "verified",
+      "evidence": [
+        "public/images/proofbox_hero.svg"
+      ],
+      "allowed_in_video": true
+    },
+    {
+      "fact_id": "fact_unverified_gpu_cluster",
+      "claim": "Supports multi-node Kubernetes GPU training inside sandboxes",
+      "status": "unverified",
+      "evidence": [],
+      "allowed_in_video": false,
+      "forbidden_phrases": [
+        "kubernetes gpu training",
+        "infinite sandbox memory",
+        "zero-latency execution"
+      ]
+    }
+  ]
+}
