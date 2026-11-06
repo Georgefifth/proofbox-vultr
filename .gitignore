@@ -1,0 +1,29 @@
+# Dependencies & build
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Secrets & Environment (NEVER commit)
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+credentials*
+vultr_env*
+
+# OS & Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Runtime temp artifacts
+/tmp_artifacts/
+*.sqlite3
+*.db
+*.tsbuildinfo
+.pytest_cache/
+
