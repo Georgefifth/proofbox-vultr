@@ -74,8 +74,9 @@ We built **ProofBox** for **Challenge 01: Blast Radius Zero** to turn containmen
 
 ## "Try it out" / Application & Repository Links
 
-- **Live Application URL (Deployed on Vultr Cloud Compute)**: `http://45.32.110.141`
-- **Demo Application Platform**: `Vultr Cloud Compute (vc2-4c-8gb, Singapore sgp)`
+- **Application URL (HTTPS Vercel Edge -> Vultr VM Proxy, recommended when selecting `Vercel` as platform)**: `https://vultr-gamma.vercel.app`
+- **Direct Vultr Cloud Compute VM URL (Web App + FastAPI + Docker Sandbox on Vultr)**: `http://45.32.110.141`
+- **Demo Application Platform (LabLab Dropdown)**: Select `Vercel` (since LabLab's global dropdown does not list Vultr; `https://vultr-gamma.vercel.app` proxies all `/api/*` execution directly to our Vultr Cloud Compute VM at `http://45.32.110.141`).
 - **Public GitHub Repository**: `https://github.com/Georgefifth/proofbox-vultr`
 
 ## Video & Slide Presentation Assets

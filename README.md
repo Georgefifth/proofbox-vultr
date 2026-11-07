@@ -2,6 +2,7 @@
 
 > **Official Entry for Vultr: Agent Rush Hackathon 2026 — Challenge 01: Blast Radius Zero**  
 > **Live Public Deployment on Vultr Cloud Compute**: `http://45.32.110.141`  
+> **HTTPS Edge Ingress Mirror (Vercel -> Vultr VM Proxy)**: `https://vultr-gamma.vercel.app`  
 > **Architecture**: Vultr Cloud Compute (`vc2-4c-8gb`, Singapore `sgp`) + Vultr Serverless Inference (`nemotron-3.5-content-safety`, `deepseek-v4.1-flash-1017`, `glm-5.3-flash`, `qwen3.8-27b`) + Ephemeral Unprivileged Docker Sandboxes (`cgroupv2` + `netns` + `HMAC-SHA256` Execution Proof Receipts)
 
 ---

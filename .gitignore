@@ -26,4 +26,7 @@ vultr_env*
 *.db
 *.tsbuildinfo
 .pytest_cache/
+.vercel/
 
+
+.vercel
