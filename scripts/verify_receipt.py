@@ -12,12 +12,20 @@ Usage:
     python3 scripts/verify_receipt.py examples/sample_live_receipt.json --forged-signer-test
 """
 
+import sys
 import json
 import hashlib
 import argparse
 from pathlib import Path
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from cryptography.hazmat.primitives import serialization
+
+# Ensure UTF-8 console output on Windows PowerShell / CMD
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 # Official pinned Ed25519 public key of the ProofBox Vultr Orchestrator Notary
 PINNED_VULTR_NOTARY_PUBKEY_HEX = "ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0"

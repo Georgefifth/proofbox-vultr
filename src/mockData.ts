@@ -278,16 +278,16 @@ print(json.dumps({
       },
     ],
     cryptographicProof: {
-      inputSha256: '4a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b',
-      codeSha256: '9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d',
-      stdoutSha256: '1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e',
+      inputSha256: '9b9a608bc2bb58afd2946df76212ccc6c54866427e1bbbc5d2324896aeb21d8a',
+      codeSha256: 'd4952c791e005a6e248d7b1e5947f9c43eeaf037eeee3c156fbf0204fde5a9aa',
+      stdoutSha256: 'f7751b37f0b5501395cd719b30fd765a54f8d732ef901cac14423240b9f3cd02',
       receiptSignatureSha256:
-        'c0ffee77a8b9c1d2e3f405162738495a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-      ed25519PublicKeyHex: '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93',
+        '970c2d7cdd7d77d7f1edaa734723e46e42725201fb6a2dedc144214764f0b7311a0995cb1452c9dc8b07e63fd486c2202cf5cb1c39041ffd27130b68d7d9c401',
+      ed25519PublicKeyHex: 'ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0',
       ed25519PublicKeyPem:
-        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAFJi1Rnpt3/otyZngacrwddFvwz/dTDsBv62uZDN2fZM=\n-----END PUBLIC KEY-----',
+        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA7Ft3V4c8UCsKRFXJEId3okuZ1577v9EjVJNcq9gb8dA=\n-----END PUBLIC KEY-----',
       canonicalPayloadJson:
-        '{"codeSha256":"9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d3c2b1a0f9e8d","containerId":"sbx-py-9f4e2a11c08b","destroyedAt":"2026-11-08T01:12:20.892Z","exitCode":0,"inputSha256":"4a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b","receiptId":"rcpt-a8f4910c","spawnedAt":"2026-11-08T01:12:19.104Z","stdoutSha256":"1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e"}',
+        '{"codeSha256":"d4952c791e005a6e248d7b1e5947f9c43eeaf037eeee3c156fbf0204fde5a9aa","containerId":"sbx-py-9f4e2a11c08b","destroyedAt":"2026-11-08T01:12:20.892Z","exitCode":0,"inputSha256":"9b9a608bc2bb58afd2946df76212ccc6c54866427e1bbbc5d2324896aeb21d8a","receiptId":"rcpt-a8f4910c","spawnedAt":"2026-11-08T01:12:19.104Z","stdoutSha256":"f7751b37f0b5501395cd719b30fd765a54f8d732ef901cac14423240b9f3cd02"}',
       verificationAlgorithm: 'Ed25519 Asymmetric Digital Signature (RFC 8032)',
     },
   },
@@ -466,16 +466,16 @@ except Exception as e:
     ],
     artifacts: [],
     cryptographicProof: {
-      inputSha256: '7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d',
-      codeSha256: '4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a',
-      stdoutSha256: '9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b',
+      inputSha256: '72943731b76f9966eeca29bca1334952e20c4dfc2773b7742582046700fb0048',
+      codeSha256: '1302a17e57ca98ab5327500f2386c6018f47aad88d613517ccb9e8f0b0928176',
+      stdoutSha256: 'c944700ab5824c0b668c837dda2b450e5b4c76aaf0f9fb16d3ebccef32bdaf7b',
       receiptSignatureSha256:
-        '3ef891a20b4c1d9e8f7766554433221100ffeeddccbbaa99887766554433221199aabbccddeeff00112233445566778899aabbccddeeff001122334455667788',
-      ed25519PublicKeyHex: '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93',
+        '29b2474380118e212f53a35a4785a054f6a46c8d32b2082e10698113c4a3341e84cb4a36d8aed9c9a0eb379cd20f5db3317dcf884b56eaf52622c35f0e7ceb0e',
+      ed25519PublicKeyHex: 'ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0',
       ed25519PublicKeyPem:
-        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAFJi1Rnpt3/otyZngacrwddFvwz/dTDsBv62uZDN2fZM=\n-----END PUBLIC KEY-----',
+        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA7Ft3V4c8UCsKRFXJEId3okuZ1577v9EjVJNcq9gb8dA=\n-----END PUBLIC KEY-----',
       canonicalPayloadJson:
-        '{"codeSha256":"4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a","containerId":"sbx-rt-00e81c44b912","destroyedAt":"2026-11-08T01:10:01.950Z","exitCode":13,"inputSha256":"7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d","receiptId":"rcpt-c771d99e","spawnedAt":"2026-11-08T01:10:00.110Z","stdoutSha256":"9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b"}',
+        '{"codeSha256":"1302a17e57ca98ab5327500f2386c6018f47aad88d613517ccb9e8f0b0928176","containerId":"sbx-rt-00e81c44b912","destroyedAt":"2026-11-08T01:10:01.950Z","exitCode":13,"inputSha256":"72943731b76f9966eeca29bca1334952e20c4dfc2773b7742582046700fb0048","receiptId":"rcpt-c771d99e","spawnedAt":"2026-11-08T01:10:00.110Z","stdoutSha256":"c944700ab5824c0b668c837dda2b450e5b4c76aaf0f9fb16d3ebccef32bdaf7b"}',
       verificationAlgorithm: 'Ed25519 Asymmetric Digital Signature (RFC 8032)',
     },
   },
@@ -636,16 +636,16 @@ with sync_playwright() as p:
       },
     ],
     cryptographicProof: {
-      inputSha256: '5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e',
-      codeSha256: '2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d',
-      stdoutSha256: '8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b',
+      inputSha256: 'be990e5cfba9b35df0e29293fd4ca5759fbe505d7cfb6a118c042f4e9758c723',
+      codeSha256: '66c63dca204f0af7525444b16fa0931f87e823275089f21e57d9b78762514e30',
+      stdoutSha256: 'aff66646d298f3a5c2c028fec261bb51adea9ca74f145498f41fc7b852deef4f',
       receiptSignatureSha256:
-        'f00dbabe1234567890abcdef1234567890abcdef1234567890abcdef123456780123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-      ed25519PublicKeyHex: '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93',
+        '5f94d2400696ad4b8ed7d30a22e5ca7a331134308c0ec09cfd638e0fd0fc7faa41fed5a01ead2d6943771d5b8c9fa2aa2412366cf4bdeb0ecc7bb540dd4d5304',
+      ed25519PublicKeyHex: 'ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0',
       ed25519PublicKeyPem:
-        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAFJi1Rnpt3/otyZngacrwddFvwz/dTDsBv62uZDN2fZM=\n-----END PUBLIC KEY-----',
+        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA7Ft3V4c8UCsKRFXJEId3okuZ1577v9EjVJNcq9gb8dA=\n-----END PUBLIC KEY-----',
       canonicalPayloadJson:
-        '{"codeSha256":"2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d","containerId":"sbx-pw-4d19b77e02a1","destroyedAt":"2026-11-08T01:15:08.902Z","exitCode":0,"inputSha256":"5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e","receiptId":"rcpt-b39e204d","spawnedAt":"2026-11-08T01:15:05.012Z","stdoutSha256":"8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b"}',
+        '{"codeSha256":"66c63dca204f0af7525444b16fa0931f87e823275089f21e57d9b78762514e30","containerId":"sbx-pw-4d19b77e02a1","destroyedAt":"2026-11-08T01:15:08.902Z","exitCode":0,"inputSha256":"be990e5cfba9b35df0e29293fd4ca5759fbe505d7cfb6a118c042f4e9758c723","receiptId":"rcpt-b39e204d","spawnedAt":"2026-11-08T01:15:05.012Z","stdoutSha256":"aff66646d298f3a5c2c028fec261bb51adea9ca74f145498f41fc7b852deef4f"}',
       verificationAlgorithm: 'Ed25519 Asymmetric Digital Signature (RFC 8032)',
     },
   },
@@ -769,16 +769,16 @@ except MemoryError as e:
     ],
     artifacts: [],
     cryptographicProof: {
-      inputSha256: '11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff',
-      codeSha256: 'aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899',
-      stdoutSha256: 'ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100',
+      inputSha256: '80289e198a87ff8cce73813ee7da5d2628cf0fa9639d6df11cef93c9b04f823f',
+      codeSha256: 'bf0aba4b1b7c62f0415fc1c7523def9085c6265ec15fab8796d6f2a78e1e24a1',
+      stdoutSha256: '9369a4787f1cc71a43380ef643afaa26d02c8b4fa25eec08ae10ef672fa90a9e',
       receiptSignatureSha256:
-        '778899aabbccddeeff00112233445566778899aabbccddeeff001122334455660123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-      ed25519PublicKeyHex: '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93',
+        'ba8b9f5eea8081e7d8ff524b02ee4ac4bca830ee1ef3af467c90444a22983f97d0234140a23cd0d9677400d960b4c4bc23e4c5105e0aa6cc6b92ab42ee80360b',
+      ed25519PublicKeyHex: 'ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0',
       ed25519PublicKeyPem:
-        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAFJi1Rnpt3/otyZngacrwddFvwz/dTDsBv62uZDN2fZM=\n-----END PUBLIC KEY-----',
+        '-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA7Ft3V4c8UCsKRFXJEId3okuZ1577v9EjVJNcq9gb8dA=\n-----END PUBLIC KEY-----',
       canonicalPayloadJson:
-        '{"codeSha256":"aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899","containerId":"sbx-rt-7721a904f11c","destroyedAt":"2026-11-08T01:18:11.490Z","exitCode":137,"inputSha256":"11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff","receiptId":"rcpt-d4109ef2","spawnedAt":"2026-11-08T01:18:10.600Z","stdoutSha256":"ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100"}',
+        '{"codeSha256":"bf0aba4b1b7c62f0415fc1c7523def9085c6265ec15fab8796d6f2a78e1e24a1","containerId":"sbx-rt-7721a904f11c","destroyedAt":"2026-11-08T01:18:11.490Z","exitCode":137,"inputSha256":"80289e198a87ff8cce73813ee7da5d2628cf0fa9639d6df11cef93c9b04f823f","receiptId":"rcpt-d4109ef2","spawnedAt":"2026-11-08T01:18:10.600Z","stdoutSha256":"9369a4787f1cc71a43380ef643afaa26d02c8b4fa25eec08ae10ef672fa90a9e"}',
       verificationAlgorithm: 'Ed25519 Asymmetric Digital Signature (RFC 8032)',
     },
   },

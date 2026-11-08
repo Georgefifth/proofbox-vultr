@@ -613,11 +613,7 @@ def verify_receipt(req: VerifyReceiptRequest) -> Dict[str, Any]:
     pub_hex = crypto.get("ed25519PublicKeyHex", ED25519_PUB_HEX)
 
     # 1. Verify signer public key is the pinned Vultr Notary Public Key (prevent self-signed attacker key injection)
-    trusted_keys = {
-        ED25519_PUB_HEX,
-        "1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93",  # Pre-loaded sample preview key
-    }
-    if pub_hex not in trusted_keys:
+    if pub_hex != ED25519_PUB_HEX:
         return {
             "verified": False,
             "ed25519Verified": False,
@@ -640,8 +636,8 @@ def verify_receipt(req: VerifyReceiptRequest) -> Dict[str, Any]:
             payload_matches_fields = False
 
     ed25519_verified = False
-    reason = "Signature verified against pinned Vultr Orchestrator Ed25519 public key."
-    if canonical_json and len(stored_sig) == 128 and pub_hex == ED25519_PUB_HEX:
+    reason = "Ed25519 signature mathematically verified against pinned Vultr Orchestrator Notary public key."
+    if canonical_json and len(stored_sig) == 128:
         try:
             pub_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(ED25519_PUB_HEX))
             pub_key.verify(bytes.fromhex(stored_sig), canonical_json.encode("utf-8"))
@@ -651,14 +647,6 @@ def verify_receipt(req: VerifyReceiptRequest) -> Dict[str, Any]:
         except Exception:
             ed25519_verified = False
             reason = "Ed25519 signature verification failed: canonical payload or signature was modified after signing."
-    elif pub_hex in trusted_keys and canonical_json and len(stored_sig) == 128:
-        # Sample preview receipt check
-        if canonical_json.endswith(" "):
-            ed25519_verified = False
-            reason = "Ed25519 signature verification failed: canonical payload was modified after signing."
-        else:
-            ed25519_verified = payload_matches_fields
-            reason = "Sample preview receipt structure verified (Click 'Re-Run Live on Vultr VM' to generate a live Ed25519 signature from the host)."
 
     return {
         "verified": ed25519_verified,

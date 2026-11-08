@@ -304,12 +304,19 @@ export function App() {
       });
       if (resp.ok) {
         const res = await resp.json();
-        setSignatureVerified(Boolean(res.verified));
+        const isOk = Boolean(res.verified);
+        setSignatureVerified(isOk);
+        const provenanceNote =
+          isOk && isSamplePreview
+            ? ` [Reference Sample Receipt ${receipt.receiptId} — Click "Re-Run Live on Vultr VM" above to sign a fresh live execution]`
+            : isOk
+              ? ` [Live Execution Receipt ${receipt.receiptId} on Vultr VM]`
+              : '';
         setSignatureReason(
-          res.reason ||
-            (res.verified
-              ? 'Ed25519 signature verified against Vultr Orchestrator public key.'
-              : 'Ed25519 signature mismatch: payload was modified after signing.')
+          (res.reason ||
+            (isOk
+              ? 'Ed25519 signature mathematically verified against pinned Vultr Orchestrator public key (ec5b7757...).'
+              : 'Ed25519 signature mismatch: payload was modified after signing.')) + provenanceNote
         );
         return;
       }
@@ -383,7 +390,7 @@ console.log("Ed25519 Signature:", receipt.cryptographicProof.receiptSignatureSha
   const ed25519VerifySnippet = receipt
     ? `from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
-pub_hex = "${receipt.cryptographicProof.ed25519PublicKeyHex || '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93'}"
+pub_hex = "${receipt.cryptographicProof.ed25519PublicKeyHex || 'ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0'}"
 sig_hex = "${receipt.cryptographicProof.receiptSignatureSha256}"
 payload = b'${receipt.cryptographicProof.canonicalPayloadJson || '{}'}'
 
@@ -585,7 +592,9 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span className="verdict-badge emerald">STEP {tutorialStep} OF 6 · INTERACTIVE TOUR</span>
+                <span className="verdict-badge emerald">
+                  STEP {tutorialStep} OF 6 · INTERACTIVE TOUR (~2 MIN)
+                </span>
                 <strong style={{ fontSize: '15px' }}>
                   {tutorialStep === 1 && '1. Meet the Isolated Task Input & CSV Workspace'}
                   {tutorialStep === 2 && '2. Run a Real Normal Task on Vultr (User-Triggered)'}
@@ -699,7 +708,7 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
               {tutorialStep === 5 && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
                   <p style={{ margin: 0, flex: 1 }}>
-                    In the <strong>3. Security &amp; Ed25519 Receipt</strong> tab below, click <strong>Verify Receipt Signature</strong> (verifies against the pinned Vultr Notary public key), then click <strong>Simulate Payload Tampering (Flip 1 Byte)</strong> to see how modifying 1 character invalidates the Ed25519 signature!
+                    <strong>Think of an Ed25519 signature like a wax seal on an envelope:</strong> it proves nobody altered the execution log after it left the Vultr Notary (<code>ec5b7757...</code>), though it does not by itself mean the task succeeded. Click <strong>Verify Original</strong>, then <strong>Flip 1 Byte (Tamper Test)</strong> to watch the seal break!
                   </p>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
@@ -1617,7 +1626,7 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
                               <span>Orchestrator Ed25519 Public Key (Hex):</span>
                               <span className="hash-val">
                                 {receipt.cryptographicProof.ed25519PublicKeyHex ||
-                                  '1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93'}
+                                  'ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0'}
                               </span>
                             </div>
                             <div className="hash-row">
@@ -1842,7 +1851,7 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
               <div className="policy-box">
                 <div className="field-label">
                   <span>TESTED SECURITY SCOPE &amp; RESIDUAL RISK BOUNDARY (HONEST ENGINEERING DISCLOSURE)</span>
-                  <span>Release Tag: v1.0-submission</span>
+                  <span>Release Tag: v1.2-submission (Pinned Key: ec5b7757...)</span>
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
                   <div>

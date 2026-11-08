@@ -1,7 +1,7 @@
 # ProofBox — Zero-Blast-Radius Agent Execution & Ed25519 Verification Platform on Vultr
 
 > **Official Entry for Vultr: Agent Rush Hackathon 2026 — Challenge 01: Blast Radius Zero**  
-> **Release Version**: `v1.1-submission` / `v1.0-submission` (Deployed & Verified on **2026-11-08 UTC**)  
+> **Release Version**: `v1.2-submission` (Deployed & Verified on **2026-11-08 UTC**)  
 > **Direct Vultr Cloud Compute HTTPS Web App**: [`https://45-32-110-141.sslip.io`](https://45-32-110-141.sslip.io) (`45.32.110.141`, Singapore `sgp`, `vc2-4c-8gb`, Instance ID `c6a71904-3636-4699-9cf5-0d52beb32d8b`)  
 > **Vercel HTTPS Edge Mirror (End-to-End TLS -> Vultr VM)**: [`https://vultr-gamma.vercel.app`](https://vultr-gamma.vercel.app)  
 > **Core Stack**: Vultr Cloud Compute + Vultr Serverless Inference (`nemotron-3.5-content-safety`, `deepseek-v4.1-flash-1017`, `glm-5.3-flash`, `qwen3.8-27b`) + Ephemeral Unprivileged Docker Sandboxes (`uid=65534`, `cgroupv2`, `netns`) + **Ed25519 Asymmetric Digital Signatures (`RFC 8032`)**
