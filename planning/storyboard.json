@@ -1,6 +1,6 @@
 {
   "project_name": "ProofBox",
-  "tagline": "Zero-Blast-Radius Agent Execution & Cryptographic Verification Platform on Vultr",
+  "tagline": "Zero-Blast-Radius Agent Execution & Ed25519 Verification Platform on Vultr",
   "preset": "terminal",
   "fps": 30,
   "width": 1920,
@@ -11,7 +11,7 @@
       "scene_id": "opening",
       "kicker": "VULTR: AGENT RUSH HACKATHON // TRACK 01",
       "title": "ProofBox: Blast Radius Zero Agent Sandbox",
-      "subtitle": "Containment-first code & web execution on Vultr Cloud Compute with HMAC-SHA256 receipts",
+      "subtitle": "Containment-first code & web execution on Vultr Cloud Compute with Ed25519 receipts",
       "duration": 8.13,
       "narration": "ProofBox delivers 'Blast Radius Zero' agent execution on Vultr in 3.29 seconds.",
       "visual_type": "opening_title",
@@ -25,7 +25,7 @@
       "badges": [
         "35 VULTR MODELS LIVE",
         "3.29s MEAN DISPATCH",
-        "HMAC-SHA256 RECEIPTS"
+        "ED25519 SIGNED RECEIPTS"
       ],
       "animations": [
         {
@@ -142,7 +142,7 @@
       "scene_id": "architecture",
       "kicker": "VULTR CLOUD COMPUTE + SERVERLESS INFERENCE",
       "title": "Four-Layer Containment & Verification Architecture",
-      "subtitle": "Every run passes through pre-flight safety, ephemeral cgroup isolation, and notary signing",
+      "subtitle": "Every run passes through pre-flight safety, ephemeral cgroup isolation, and Ed25519 notary signing",
       "duration": 7.17,
       "narration": "Four containment layers link 'Vultr Serverless Inference' to ephemeral Docker sandboxes.",
       "visual_type": "exploded_view",
@@ -158,14 +158,14 @@
           "id": "safety_gate",
           "name": "Layer 1 · Pre-Flight Safety Gate",
           "spec": "NEMOTRON-3.5-CONTENT-SAFETY",
-          "role": "Audits prompts and AST syscall rules before spawning containers",
+          "role": "Audits prompts and Python AST rules before spawning containers",
           "layer": -1.5
         },
         {
           "id": "planner_loop",
           "name": "Layer 2 · Self-Healing Planner",
           "spec": "DEEPSEEK-V4.1-FLASH · 1.67s",
-          "role": "Synthesizes Python or Browser scripts and auto-repairs runtime errors",
+          "role": "Synthesizes Pandas or Chromium scripts and records unified repair diffs",
           "layer": -0.5
         },
         {
@@ -177,8 +177,8 @@
         },
         {
           "id": "notary_verifier",
-          "name": "Layer 4 · Qwen Verifier & Notary",
-          "spec": "QWEN3.8-27B + HMAC-SHA256",
+          "name": "Layer 4 · Host Checks & Ed25519 Notary",
+          "spec": "QWEN3.8-27B + ED25519 RFC 8032",
           "role": "Verifies outputs, confirms container destruction, and signs receipt",
           "layer": 1.5
         }
@@ -216,37 +216,51 @@
     },
     {
       "scene_id": "live_code_demo",
-      "kicker": "LIVE VULTR DEPLOYMENT // PATTERN A: CODE SANDBOX",
-      "title": "Air-Gapped Python Execution & Receipt Verification",
-      "subtitle": "Live capture on http://45.32.110.141 showing self-healing CSV audit and HMAC signature check",
-      "duration": 9.04,
-      "narration": "Watch ProofBox run 'air-gapped' Python analysis, self-heal errors, and verify HMAC receipts.",
+      "kicker": "LIVE VULTR DEPLOYMENT // STEP 1: NORMAL WORKFLOW",
+      "title": "Air-Gapped Pandas Execution & 3-Dimensional Verdict",
+      "subtitle": "Live capture on https://vultr-gamma.vercel.app showing CSV chart, host checks, and 6-step tour",
+      "duration": 9.42,
+      "narration": "Watch ProofBox run 'air-gapped' Pandas analysis, self-heal errors, and sign Ed25519 receipts.",
       "visual_type": "real_footage_with_annotations",
       "fact_ids": [
         "fact_vultr_multi_model_pipeline",
         "fact_four_pillar_containment"
       ],
       "live_capture": {
-        "url": "http://45.32.110.141",
-        "session": "vultr-demo",
+        "url": "https://vultr-gamma.vercel.app",
+        "session": "vultr-demo-v12",
         "actions": [
           {
             "type": "wait",
-            "ms": 600,
+            "ms": 500,
             "__focus": null
           },
           {
             "type": "click",
-            "sel": "button:has-text('Verify Receipt Signature')",
-            "label": "Verify HMAC-SHA256 Seal",
+            "sel": "button:has-text('2. Execution & Code')",
+            "label": "Inspect Unified Self-Healing Diff",
             "__focus": [
-              848.6,
-              1814.1
+              1109,
+              348.6
             ]
           },
           {
             "type": "wait",
-            "ms": 1400,
+            "ms": 1100,
+            "__focus": null
+          },
+          {
+            "type": "click",
+            "sel": "button:has-text('1. Overview & Timeline')",
+            "label": "Inspect 3-Part Verdict & Chart",
+            "__focus": [
+              868,
+              352.5
+            ]
+          },
+          {
+            "type": "wait",
+            "ms": 900,
             "__focus": null
           }
         ]
@@ -254,27 +268,27 @@
       "animations": [
         {
           "type": "highlight",
-          "target": "PIPELINE_BAR",
-          "text": "6-Stage Vultr Inference Pipeline",
-          "subtext": "Nemotron -> DeepSeek -> Docker -> Qwen 3.8",
-          "start": 0.56,
-          "duration": 3.89,
-          "x": 50,
-          "y": 18,
-          "w": 88,
-          "h": 18
+          "target": "STATUS_PILLARS",
+          "text": "3-Part Verdict: Execution + Goal + Seal",
+          "subtext": "Completed (Exit 0) · Goal Met · Ed25519 Valid",
+          "start": 0.58,
+          "duration": 4.06,
+          "x": 65,
+          "y": 38,
+          "w": 56,
+          "h": 24
         },
         {
           "type": "label",
-          "target": "RECEIPT_SEAL",
-          "text": "Verified Container Teardown & Chart",
-          "subtext": "0 Secrets Mounted · Lifecycle: DESTROYED",
-          "start": 4.45,
-          "duration": 3.89,
+          "target": "HOST_CHECKS",
+          "text": "4/4 Host Deterministic Checks Passed",
+          "subtext": "Sum $151,090 + SVG Header + docker inspect",
+          "start": 4.64,
+          "duration": 4.06,
           "x": 65,
-          "y": 55,
+          "y": 68,
           "w": 56,
-          "h": 42
+          "h": 26
         }
       ],
       "assets": [
@@ -284,14 +298,14 @@
       "captions": [
         {
           "start": 0.05,
-          "end": 7.45,
-          "text": "Watch ProofBox run 'air-gapped' Python analysis, self-heal errors, and verify HMAC receipts."
+          "end": 7.87,
+          "text": "Watch ProofBox run 'air-gapped' Pandas analysis, self-heal errors, and sign Ed25519 receipts."
         }
       ]
     },
     {
       "scene_id": "containment_moment",
-      "kicker": "MANDATORY CONTAINMENT MOMENT // RED-TEAM LAB",
+      "kicker": "MANDATORY CONTAINMENT MOMENT // STEP 2: ATTACK BLOCKED",
       "title": "Intercepting Secret Theft & Cloud Metadata SSRF",
       "subtitle": "Adversarial probe attempts VULTR_API_KEY dump, /etc/shadow read, and 169.254.169.254 SSRF",
       "duration": 7.98,
@@ -302,34 +316,48 @@
         "fact_validation_benchmark"
       ],
       "live_capture": {
-        "session": "vultr-demo",
+        "session": "vultr-demo-v12",
         "actions": [
           {
             "type": "click",
-            "sel": "button:has-text('Containment Moment: Secret Exfiltration')",
+            "sel": "button:has-text('Scenario 2 (Malicious Task)')",
             "label": "Load Adversarial Probe",
             "__focus": [
-              491.7,
-              -91.1
+              510.6,
+              468.7
             ]
           },
           {
             "type": "wait",
-            "ms": 1200,
+            "ms": 1000,
             "__focus": null
           },
           {
             "type": "click",
-            "sel": "button:has-text('2. Red-Team Containment Matrix')",
-            "label": "Open Red-Team Matrix",
+            "sel": "button:has-text('3. Security & Ed25519 Receipt')",
+            "label": "Open Ed25519 Signature Inspector",
             "__focus": [
-              1594,
-              -145.7
+              1273.5,
+              350
             ]
           },
           {
             "type": "wait",
-            "ms": 1400,
+            "ms": 600,
+            "__focus": null
+          },
+          {
+            "type": "click",
+            "sel": "button:has-text('Verify Receipt Signature')",
+            "label": "Verify Pinned Ed25519 Signature",
+            "__focus": [
+              867.2,
+              1052.8
+            ]
+          },
+          {
+            "type": "wait",
+            "ms": 1000,
             "__focus": null
           }
         ]
@@ -338,26 +366,26 @@
         {
           "type": "highlight",
           "target": "CONTAINMENT_BANNER",
-          "text": "Threat Contained: Host 100% Intact",
+          "text": "3/3 Tested Attack Vectors Blocked",
           "subtext": "VULTR_API_KEY=False · /etc/shadow Errno 13",
           "start": 0.47,
           "duration": 3.52,
           "x": 65,
-          "y": 42,
+          "y": 38,
           "w": 58,
-          "h": 34
+          "h": 28
         },
         {
           "type": "label",
-          "target": "REDTEAM_MATRIX",
-          "text": "4/4 Exploit Vectors Neutralized",
-          "subtext": "Secrets, Metadata SSRF, Rootfs, and 4GB OOM",
+          "target": "ED25519_SEAL",
+          "text": "Verified Against Pinned Notary Key",
+          "subtext": "PubKey: ec5b7757... · Tamper Test Supported",
           "start": 4.11,
           "duration": 3.29,
-          "x": 52,
-          "y": 54,
-          "w": 75,
-          "h": 36
+          "x": 65,
+          "y": 64,
+          "w": 58,
+          "h": 32
         }
       ],
       "assets": [
@@ -376,7 +404,7 @@
       "scene_id": "validation",
       "kicker": "STAGE 3.5 REAL-WORLD VALIDATION BENCHMARK",
       "title": "100% Pass Rate Across 12 External & Adversarial Cases",
-      "subtitle": "Tested against live Vultr VM (http://45.32.110.141) with OWASP LLM Top 10 & IANA targets",
+      "subtitle": "Tested against live Vultr VM (https://45-32-110-141.sslip.io) with OWASP LLM Top 10 & IANA targets",
       "duration": 7.96,
       "narration": "Real-world tests confirm 100% pass rate across 12 benchmarks with 0 leaked secrets.",
       "visual_type": "technical_validation",
@@ -427,9 +455,9 @@
         }
       ],
       "limitations": [
-        "Air-gapped Python sandbox (--network=none) restricts runtime pip installs by design",
-        "Tasks exceeding the 12s wall-clock timeout are forcefully terminated",
-        "Browser mode uses lightweight DOM/header inspector instead of full GUI video streaming"
+        "Containers share the host Linux kernel (6.8); hardware microVMs needed against kernel 0-days",
+        "Air-gapped Python mode (--network=none) restricts runtime pip installs by design",
+        "Browser mode permits outbound HTTPS to public non-RFC1918 IPs for page rendering"
       ],
       "animations": [
         {
@@ -458,11 +486,11 @@
     },
     {
       "scene_id": "closing",
-      "kicker": "LIVE ON VULTR CLOUD COMPUTE // SGP",
+      "kicker": "LIVE ON VULTR CLOUD COMPUTE // RELEASE v1.2-SUBMISSION",
       "title": "ProofBox · Ready for Zero-Trust Agent Workloads",
-      "subtitle": "Live Demo: http://45.32.110.141 · GitHub: github.com/Georgefifth/proofbox-vultr",
-      "duration": 7,
-      "narration": "ProofBox is live on 'Vultr Cloud Compute' with cryptographic execution proofs.",
+      "subtitle": "Live HTTPS: https://vultr-gamma.vercel.app · Direct VM: https://45-32-110-141.sslip.io",
+      "duration": 8.49,
+      "narration": "ProofBox is live on 'Vultr Cloud Compute' with Ed25519 cryptographic execution proofs.",
       "visual_type": "closing_summary",
       "fact_ids": [
         "fact_vultr_multi_model_pipeline",
@@ -470,16 +498,16 @@
         "fact_validation_benchmark"
       ],
       "badges": [
-        "LIVE DEMO::http://45.32.110.141 (Vultr vc2-4c-8gb)",
+        "LIVE HTTPS::https://vultr-gamma.vercel.app (Vultr vc2-4c-8gb)",
         "INFERENCE::Nemotron 3.5 + DeepSeek V4.1 + Qwen 3.8",
-        "CONTAINMENT::0 Secrets · Air-Gapped · HMAC-SHA256"
+        "SIGNATURE::Ed25519 RFC 8032 (Pinned Key ec5b7757...)"
       ],
       "audio_file": "audio/closing.mp3",
       "captions": [
         {
           "start": 0.05,
-          "end": 5.41,
-          "text": "ProofBox is live on 'Vultr Cloud Compute' with cryptographic execution proofs."
+          "end": 6.9,
+          "text": "ProofBox is live on 'Vultr Cloud Compute' with Ed25519 cryptographic execution proofs."
         }
       ]
     }
