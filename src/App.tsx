@@ -15,19 +15,74 @@ import {
   Layers,
   Activity,
   Trash2,
+  Code2,
+  Upload,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { ExecutionMode, ProofReceipt, PresetScenario } from './types';
 import { PRESET_SCENARIOS, MOCK_RECEIPTS } from './mockData';
 
-type WorkspaceView = 'workbench' | 'redteam' | 'ledger';
+type WorkspaceView = 'workbench' | 'redteam' | 'ledger' | 'sdk';
+type AuthoringMode = 'agent_prompt' | 'direct_code';
+
+const DEFAULT_MOUNTED_CSV = `region,service,spend_usd,requests_millions,error_rate_pct
+US-EWR,cloud-compute,$34,210.00,142.5,0.12
+EU-FRA,cloud-compute,$28,450.00,118.0,0.09
+AP-SGP,serverless-inference,$46,890.00,310.4,1.84
+AP-NRT,block-storage,$22,900.00,95.2,0.05
+US-LAX,object-storage,$18,640.00,88.1,0.07`;
+
+const DEFAULT_DIRECT_CODE = `import json
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Read mounted /workspace/dataset.csv inside air-gapped container
+df = pd.read_csv('/workspace/dataset.csv')
+df['spend_num'] = (
+    df['spend_usd'].astype(str)
+    .str.replace('$', '', regex=False)
+    .str.replace(',', '', regex=False)
+    .astype(float)
+)
+mu, sigma = df['spend_num'].mean(), df['spend_num'].std()
+df['z_score'] = (df['spend_num'] - mu) / sigma
+anomalies = df[df['z_score'] > 1.3]['region'].tolist()
+
+# Save real Matplotlib SVG artifact to /output/chart.svg
+plt.style.use('dark_background')
+fig, ax = plt.subplots(figsize=(7.2, 3.0), dpi=120)
+fig.patch.set_facecolor('#0B0F15')
+ax.set_facecolor('#0B0F15')
+colors = ['#F59E0B' if r in anomalies else '#0EA5E9' for r in df['region']]
+ax.bar(df['region'], df['spend_num'], color=colors, width=0.55)
+ax.set_title('Real Pandas + Matplotlib Output (/output/chart.svg)', fontsize=11, color='#F1F5F9')
+ax.set_ylabel('Spend (USD)', color='#94A3B8')
+plt.tight_layout()
+plt.savefig('/output/chart.svg', format='svg')
+
+print(json.dumps({
+    "rows": len(df),
+    "total_usd": float(df['spend_num'].sum()),
+    "mean_usd": round(float(mu), 2),
+    "sigma": round(float(sigma), 2),
+    "anomalies": anomalies,
+    "artifact": "/output/chart.svg"
+}, indent=2))`;
 
 export function App() {
   const [activeView, setActiveView] = useState<WorkspaceView>('workbench');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('csv-cohort-chart');
   const [mode, setMode] = useState<ExecutionMode>('code_sandbox');
+  const [authoringMode, setAuthoringMode] = useState<AuthoringMode>('agent_prompt');
   const [prompt, setPrompt] = useState<string>(PRESET_SCENARIOS[0].prompt);
+  const [directCode, setDirectCode] = useState<string>(DEFAULT_DIRECT_CODE);
+  const [mountedFileName, setMountedFileName] = useState<string>('dataset.csv');
+  const [mountedFileContent, setMountedFileContent] = useState<string>(DEFAULT_MOUNTED_CSV);
+  const [showFileEditor, setShowFileEditor] = useState<boolean>(false);
   const [targetUrl, setTargetUrl] = useState<string>('https://example.com');
   const [airGapped, setAirGapped] = useState<boolean>(true);
+  const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
 
   // Execution & UI states
   const [receipt, setReceipt] = useState<ProofReceipt | null>(MOCK_RECEIPTS['rcpt-a8f4910c']);
@@ -46,11 +101,10 @@ export function App() {
   }>({
     vmHostname: 'proofbox-vultr (sgp · vc2-4c-8gb)',
     inferenceStatus: 'CONNECTED (35 models)',
-    dockerStatus: 'CGROUPV2 + NETNS ACTIVE',
+    dockerStatus: 'DOCKER ACTIVE (proofbox/runtime:latest)',
     modelsCount: 35,
   });
 
-  // Check if live backend is reachable
   useEffect(() => {
     fetch('/api/health')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -82,6 +136,7 @@ export function App() {
   const handleSelectPreset = (preset: PresetScenario) => {
     setSelectedPresetId(preset.id);
     setMode(preset.mode);
+    setAuthoringMode('agent_prompt');
     setPrompt(preset.prompt);
     if (preset.targetUrl) {
       setTargetUrl(preset.targetUrl);
@@ -100,16 +155,30 @@ export function App() {
     setMode(nextMode);
     setValidationError(null);
     setRuntimeError(null);
-    if (nextMode === 'code_sandbox') {
-      setAirGapped(true);
-    } else if (nextMode === 'browser_sandbox') {
-      setAirGapped(false);
-    } else {
-      setAirGapped(true);
-    }
+    setAirGapped(nextMode !== 'browser_sandbox');
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setMountedFileName(file.name);
+      setMountedFileContent(String(reader.result || ''));
+      setShowFileEditor(true);
+    };
+    reader.readAsText(file);
   };
 
   const validateInputs = (): boolean => {
+    if (authoringMode === 'direct_code') {
+      if (!directCode.trim()) {
+        setValidationError('CODE_REQUIRED: Enter executable Python or Playwright code to run inside the container.');
+        return false;
+      }
+      setValidationError(null);
+      return true;
+    }
     const trimmed = prompt.trim();
     if (!trimmed) {
       setValidationError('FIELD_REQUIRED: Task prompt cannot be empty. Provide a code, data, or browser inspection goal.');
@@ -135,8 +204,8 @@ export function App() {
     return true;
   };
 
-  const handleDispatchSandbox = async () => {
-    if (!validateInputs()) return;
+  const handleDispatchSandbox = async (overrideCode?: string) => {
+    if (!overrideCode && !validateInputs()) return;
 
     setRuntimeError(null);
     setSignatureVerified(null);
@@ -147,13 +216,22 @@ export function App() {
       setActiveStageIdx((prev) => (prev < 5 ? prev + 1 : prev));
     }, 350);
 
+    const filesPayload: Record<string, string> = {};
+    if (mountedFileName.trim() && mountedFileContent.trim()) {
+      filesPayload[mountedFileName.trim()] = mountedFileContent;
+    }
+
+    const codeToSend = overrideCode ?? (authoringMode === 'direct_code' ? directCode : undefined);
+
     try {
       const resp = await fetch('/api/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: prompt.trim(),
+          prompt: prompt.trim() || 'Direct Developer Code Execution',
           mode,
+          code: codeToSend,
+          files: filesPayload,
           targetUrl: mode === 'browser_sandbox' ? targetUrl.trim() : undefined,
           airGapped,
           presetId: selectedPresetId,
@@ -177,15 +255,14 @@ export function App() {
         return;
       }
     } catch {
-      // Fallback to deterministic local simulation if backend not yet attached
+      // Fallback to deterministic local simulation if backend not attached
     }
 
-    await new Promise((r) => setTimeout(r, 1100));
+    await new Promise((r) => setTimeout(r, 900));
     window.clearInterval(stageTimer);
     setActiveStageIdx(-1);
     setIsLoading(false);
 
-    // Match preset or synthesize receipt based on prompt
     const lower = prompt.toLowerCase();
     if (
       mode === 'redteam_probe' ||
@@ -242,7 +319,44 @@ export function App() {
     URL.revokeObjectURL(url);
   };
 
+  const copyText = (id: string, text: string) => {
+    navigator.clipboard?.writeText(text);
+    setCopiedSnippet(id);
+    setTimeout(() => setCopiedSnippet(null), 1800);
+  };
+
   const currentStages = receipt?.pipelineStages || MOCK_RECEIPTS['rcpt-a8f4910c'].pipelineStages;
+
+  const curlSnippet = `curl -X POST https://vultr-gamma.vercel.app/api/v1/sandboxes/exec \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "code": "import pandas as pd\\ndf = pd.read_csv(\\"/workspace/data.csv\\")\\nprint(df.describe().to_json())",
+    "files": {
+      "data.csv": "region,latency_ms\\nsgp,12.4\\newr,41.2\\nfra,35.8\\n"
+    },
+    "air_gapped": true,
+    "memory_mb": 512
+  }'`;
+
+  const pythonSdkSnippet = `from sdk.proofbox import Sandbox
+
+# Connect to your ProofBox Orchestrator on Vultr Cloud Compute
+with Sandbox(base_url="https://vultr-gamma.vercel.app") as sbx:
+    res = sbx.exec_code(
+        code="""
+import pandas as pd, matplotlib.pyplot as plt
+df = pd.read_csv('/workspace/metrics.csv')
+plt.style.use('dark_background')
+df.plot(kind='bar', x='node', y='p99_ms', color='#10B981')
+plt.savefig('/output/latency.svg')
+print(df.to_json(orient='records'))
+""",
+        files={"metrics.csv": "node,p99_ms\\nsgp-01,11.2\\newr-02,38.4\\nfra-01,29.1\\n"},
+        air_gapped=True,
+    )
+    print("Container ID:", res.container_id, "| Destroyed:", res.cleanup_verified)
+    print("HMAC-SHA256 Receipt:", res.receipt_signature_sha256)
+    print("Harvested /output Artifacts:", [a.name for a in res.artifacts])`;
 
   return (
     <div className="app-shell">
@@ -258,7 +372,7 @@ export function App() {
               <span className="brand-tag">BLAST RADIUS ZERO</span>
             </h1>
             <p className="brand-subtitle">
-              Containment-First Agent Execution &amp; Cryptographic Receipt Platform on Vultr
+              Developer Sandbox SDK, Ephemeral Container Runtime &amp; Receipt Platform on Vultr
             </p>
           </div>
         </div>
@@ -271,6 +385,14 @@ export function App() {
           >
             <Terminal size={15} />
             <span>1. Sandbox Workbench</span>
+          </button>
+          <button
+            type="button"
+            className={`nav-tab ${activeView === 'sdk' ? 'active' : ''}`}
+            onClick={() => setActiveView('sdk')}
+          >
+            <Code2 size={15} />
+            <span>4. Developer API &amp; SDK</span>
           </button>
           <button
             type="button"
@@ -322,6 +444,9 @@ export function App() {
                 PLANNER: <strong>deepseek-v4.1-flash-1017 / glm-5.3-flash</strong>
               </span>
               <span className="lifecycle-pill">
+                RUNTIME: <strong>Pandas + Matplotlib + Playwright Chromium</strong>
+              </span>
+              <span className="lifecycle-pill">
                 VERIFIER: <strong>qwen3.8-27b</strong>
               </span>
             </div>
@@ -356,27 +481,49 @@ export function App() {
         {/* VIEW 1: SANDBOX WORKBENCH */}
         {activeView === 'workbench' && (
           <div className="split-workbench">
-            {/* Left Column: Task Dispatcher & Isolation Policy */}
+            {/* Left Column: Task Dispatcher, Direct Code IDE & Workspace File Mount */}
             <section className="panel-card" aria-label="Sandbox Task Dispatcher">
               <div className="panel-header">
                 <div className="section-label">
                   <Terminal size={14} />
-                  <span>TASK DISPATCHER &amp; CONTAINMENT POLICY</span>
+                  <span>TASK DISPATCHER &amp; WORKSPACE MOUNT</span>
                 </div>
-                <button
-                  type="button"
-                  className="secondary-btn"
-                  style={{ minHeight: '32px', padding: '4px 8px', fontSize: '11px' }}
-                  onClick={() => {
-                    setReceipt(null);
-                    setPrompt('');
-                    setValidationError(null);
-                    setRuntimeError(null);
-                  }}
-                >
-                  <Trash2 size={12} />
-                  <span>Clear / Empty State</span>
-                </button>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    type="button"
+                    className="secondary-btn"
+                    style={{
+                      minHeight: '32px',
+                      padding: '4px 8px',
+                      fontSize: '11px',
+                      borderColor: authoringMode === 'direct_code' ? 'var(--accent-cyan)' : undefined,
+                    }}
+                    onClick={() =>
+                      setAuthoringMode((m) => (m === 'agent_prompt' ? 'direct_code' : 'agent_prompt'))
+                    }
+                  >
+                    <Code2 size={12} />
+                    <span>
+                      {authoringMode === 'agent_prompt'
+                        ? 'Switch to Direct Code IDE'
+                        : 'Switch to AI Agent Prompt'}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="secondary-btn"
+                    style={{ minHeight: '32px', padding: '4px 8px', fontSize: '11px' }}
+                    onClick={() => {
+                      setReceipt(null);
+                      setPrompt('');
+                      setValidationError(null);
+                      setRuntimeError(null);
+                    }}
+                  >
+                    <Trash2 size={12} />
+                    <span>Clear / Empty State</span>
+                  </button>
+                </div>
               </div>
 
               <div className="panel-body">
@@ -392,7 +539,7 @@ export function App() {
                       onClick={() => handleModeChange('code_sandbox')}
                     >
                       <span>Pattern A · Code</span>
-                      <span className="mode-sub">Python 3.12 · Air-Gap</span>
+                      <span className="mode-sub">Python 3.12 · Pandas</span>
                     </button>
                     <button
                       type="button"
@@ -416,7 +563,7 @@ export function App() {
                 {/* Verified Scenario Presets */}
                 <div className="field-group">
                   <div className="field-label">
-                    <span>2. VERIFIED SCENARIO PRESETS (1-CLICK LOAD)</span>
+                    <span>2. VERIFIED SCENARIO PRESETS (OR UPLOAD CUSTOM DATA BELOW)</span>
                   </div>
                   <div className="preset-list">
                     {PRESET_SCENARIOS.map((preset) => (
@@ -437,11 +584,54 @@ export function App() {
                   </div>
                 </div>
 
+                {/* Real Workspace File Upload / Mount (/workspace/<filename>) */}
+                {mode === 'code_sandbox' && (
+                  <div className="policy-box">
+                    <div className="field-label">
+                      <span>
+                        MOUNTED CONTAINER FILE: <code>/workspace/{mountedFileName}</code> (Read-Only)
+                      </span>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <label
+                          className="secondary-btn"
+                          style={{ minHeight: '28px', padding: '2px 8px', fontSize: '10px', cursor: 'pointer' }}
+                        >
+                          <Upload size={11} />
+                          <span>Upload CSV/JSON</span>
+                          <input
+                            type="file"
+                            accept=".csv,.json,.txt,.log,.py"
+                            style={{ display: 'none' }}
+                            onChange={handleFileUpload}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          className="secondary-btn"
+                          style={{ minHeight: '28px', padding: '2px 8px', fontSize: '10px' }}
+                          onClick={() => setShowFileEditor((v) => !v)}
+                        >
+                          <span>{showFileEditor ? 'Hide Data' : 'Edit CSV Data'}</span>
+                        </button>
+                      </div>
+                    </div>
+                    {showFileEditor && (
+                      <textarea
+                        className="prompt-textarea"
+                        style={{ minHeight: '84px', fontSize: '11px' }}
+                        value={mountedFileContent}
+                        onChange={(e) => setMountedFileContent(e.target.value)}
+                        aria-label="Mounted Workspace File Content"
+                      />
+                    )}
+                  </div>
+                )}
+
                 {/* Target URL input when in Browser Sandbox Mode */}
                 {mode === 'browser_sandbox' && (
                   <div className="field-group">
                     <label className="field-label" htmlFor="target-url-input">
-                      <span>TARGET URL (PLAYWRIGHT CHROMIUM SANDBOX)</span>
+                      <span>TARGET URL (HEADLESS CHROMIUM PLAYWRIGHT SANDBOX)</span>
                       <span>SSRF Filter Active</span>
                     </label>
                     <input
@@ -460,30 +650,49 @@ export function App() {
                   </div>
                 )}
 
-                {/* Task Prompt Input */}
-                <div className="field-group">
-                  <label className="field-label" htmlFor="task-prompt-input">
-                    <span>AGENT TASK SPECIFICATION</span>
-                    <span>{prompt.length} chars</span>
-                  </label>
-                  <textarea
-                    id="task-prompt-input"
-                    className={`prompt-textarea ${
-                      validationError && !validationError.includes('URL') ? 'input-invalid' : ''
-                    }`}
-                    value={prompt}
-                    onChange={(e) => {
-                      setPrompt(e.target.value);
-                      if (validationError) setValidationError(null);
-                    }}
-                    onKeyDown={(e) => {
-                      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                        handleDispatchSandbox();
-                      }
-                    }}
-                    placeholder="Describe the Python analysis, chart generation, Playwright web audit, or adversarial containment test..."
-                  />
-                </div>
+                {/* Authoring Box: Either Agent Task Specification OR Direct Python/Playwright Code IDE */}
+                {authoringMode === 'direct_code' ? (
+                  <div className="field-group">
+                    <label className="field-label" htmlFor="direct-code-input">
+                      <span>DIRECT PYTHON / PLAYWRIGHT CODE (RUNS AS UID 65534 IN CONTAINER)</span>
+                      <span>Save plots/files to /output/</span>
+                    </label>
+                    <textarea
+                      id="direct-code-input"
+                      className="prompt-textarea"
+                      style={{ minHeight: '165px', fontSize: '11px' }}
+                      value={directCode}
+                      onChange={(e) => {
+                        setDirectCode(e.target.value);
+                        if (validationError) setValidationError(null);
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="field-group">
+                    <label className="field-label" htmlFor="task-prompt-input">
+                      <span>AGENT TASK SPECIFICATION</span>
+                      <span>{prompt.length} chars</span>
+                    </label>
+                    <textarea
+                      id="task-prompt-input"
+                      className={`prompt-textarea ${
+                        validationError && !validationError.includes('URL') ? 'input-invalid' : ''
+                      }`}
+                      value={prompt}
+                      onChange={(e) => {
+                        setPrompt(e.target.value);
+                        if (validationError) setValidationError(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                          handleDispatchSandbox();
+                        }
+                      }}
+                      placeholder="Describe the Python/Pandas analysis, chart generation, Playwright web audit, or adversarial containment test..."
+                    />
+                  </div>
+                )}
 
                 {/* Inline Invalid Input Feedback */}
                 {validationError && (
@@ -512,18 +721,18 @@ export function App() {
                       {airGapped ? '--network=none' : 'SSRF-Guard (No RFC1918/169.254)'}
                     </span>
                     <span className="flag-chip">--memory=512m</span>
-                    <span className="flag-chip">--cpus=1.0</span>
+                    <span className="flag-chip">--cpus=1.5</span>
                     <span className="flag-chip">--pids-limit=64</span>
-                    <span className="flag-chip">--read-only rootfs</span>
+                    <span className="flag-chip">/workspace:ro · /output:rw</span>
                     <span className="flag-chip highlight">Auto-Destroy on Exit</span>
                   </div>
                 </div>
 
-                {/* Primary CTA (One Primary Action on Workbench) */}
+                {/* Primary CTA */}
                 <button
                   type="button"
                   className="primary-cta"
-                  onClick={handleDispatchSandbox}
+                  onClick={() => handleDispatchSandbox()}
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -541,10 +750,9 @@ export function App() {
               </div>
             </section>
 
-            {/* Right Column: Verifiable Execution Proof Receipt & Artifacts */}
+            {/* Right Column: Verifiable Execution Proof Receipt & Harvested /output Artifacts */}
             <section className="panel-card" aria-label="Execution Proof Receipt">
               {!receipt && !runtimeError ? (
-                /* Actionable Empty State */
                 <div className="panel-body" style={{ padding: '28px 24px', textAlign: 'left' }}>
                   <div className="section-label" style={{ color: 'var(--accent-emerald)' }}>
                     <ShieldCheck size={16} />
@@ -554,7 +762,7 @@ export function App() {
                     No Active Execution Receipt Selected
                   </h2>
                   <p style={{ color: 'var(--text-secondary)', margin: '0 0 12px' }}>
-                    Select one of the verified scenarios below or enter a custom prompt on the left to dispatch a fresh unprivileged container on Vultr Cloud Compute and generate a signed SHA-256 Execution Proof Receipt:
+                    Select one of the verified scenarios below, upload a CSV/JSON file, or write direct Python/Playwright code on the left to dispatch a fresh unprivileged container on Vultr Cloud Compute:
                   </p>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     {PRESET_SCENARIOS.slice(0, 3).map((p) => (
@@ -571,7 +779,6 @@ export function App() {
                   </div>
                 </div>
               ) : runtimeError ? (
-                /* Explicit Error State with Recovery Action */
                 <div className="panel-body">
                   <div className="receipt-banner error">
                     <div className="status-headline">
@@ -580,7 +787,7 @@ export function App() {
                     </div>
                   </div>
                   <p style={{ color: 'var(--text-secondary)' }}>{runtimeError}</p>
-                  <button type="button" className="primary-cta" onClick={handleDispatchSandbox}>
+                  <button type="button" className="primary-cta" onClick={() => handleDispatchSandbox()}>
                     <RefreshCw size={16} />
                     <span>Retry in Fresh Ephemeral Sandbox</span>
                   </button>
@@ -588,7 +795,6 @@ export function App() {
               ) : (
                 receipt && (
                   <>
-                    {/* Receipt Status & Container Lifecycle Header */}
                     <div
                       className={`receipt-banner ${
                         receipt.status === 'CONTAINED_THREAT' ? 'contained' : 'verified'
@@ -730,12 +936,12 @@ export function App() {
                         </div>
                       )}
 
-                      {/* Visual Artifact / Playwright Screenshot Preview */}
+                      {/* Harvested /output/* Visual Artifact / Real Playwright PNG Screenshot Preview */}
                       {receipt.artifacts.length > 0 && receipt.artifacts[0].previewData && (
                         <div className="field-group">
                           <div className="field-label">
                             <span>
-                              VERIFIED SANDBOX ARTIFACT: {receipt.artifacts[0].name} (SHA-256:{' '}
+                              HARVESTED /output ARTIFACT: {receipt.artifacts[0].name} (SHA-256:{' '}
                               {receipt.artifacts[0].sha256.slice(0, 16)}...)
                             </span>
                             <span>{receipt.artifacts[0].sizeBytes} bytes</span>
@@ -747,11 +953,23 @@ export function App() {
                         </div>
                       )}
 
-                      {/* Executed Code & Real Stdout/Stderr Split */}
+                      {/* Executed Code (with 1-Click "Edit & Re-Run in IDE" for Developers!) & Real Stdout/Stderr Split */}
                       <div className="code-output-grid">
                         <div className="field-group">
                           <div className="field-label">
-                            <span>EXECUTED SANDBOX CODE ({receipt.containerLifecycle.image})</span>
+                            <span>EXECUTED SANDBOX CODE ({receipt.containerLifecycle.image.split(' ')[0]})</span>
+                            <button
+                              type="button"
+                              className="secondary-btn"
+                              style={{ minHeight: '24px', padding: '2px 8px', fontSize: '10px' }}
+                              onClick={() => {
+                                setDirectCode(receipt.generatedCode);
+                                setAuthoringMode('direct_code');
+                              }}
+                            >
+                              <Code2 size={11} />
+                              <span>Edit &amp; Customize Code</span>
+                            </button>
                           </div>
                           <pre className="code-block">{receipt.generatedCode}</pre>
                         </div>
@@ -863,6 +1081,88 @@ export function App() {
               )}
             </section>
           </div>
+        )}
+
+        {/* VIEW 4: DEVELOPER API, PYTHON SDK & OPENAI TOOL SCHEMA */}
+        {activeView === 'sdk' && (
+          <section className="panel-card" aria-label="Developer API and Python SDK">
+            <div className="panel-header">
+              <div className="section-label">
+                <Code2 size={15} color="var(--accent-cyan)" />
+                <span>PROGRAMMATIC DEVELOPER API (POST /api/v1/sandboxes/exec) &amp; PYTHON SDK</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <a
+                  href="/api/v1/sdk/proofbox.py"
+                  download="proofbox.py"
+                  className="secondary-btn"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Download size={14} />
+                  <span>Download Python SDK (proofbox.py)</span>
+                </a>
+                <button
+                  type="button"
+                  className="primary-cta"
+                  style={{ width: 'auto', padding: '8px 18px', minHeight: '44px' }}
+                  onClick={() => {
+                    setAuthoringMode('direct_code');
+                    setDirectCode(DEFAULT_DIRECT_CODE);
+                    setActiveView('workbench');
+                    handleDispatchSandbox(DEFAULT_DIRECT_CODE);
+                  }}
+                >
+                  <Play size={15} />
+                  <span>Test Live SDK Execution in Sandbox</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="panel-body">
+              <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+                Integrate ProofBox directly into your own AI agents (LangChain, OpenCode, Claude Code, custom Vultr Serverless Inference loops). Send untrusted Python, Pandas, Matplotlib, or Playwright code + input files to{' '}
+                <code>POST /api/v1/sandboxes/exec</code> and receive real stdout, harvested <code>/output/*</code> artifacts, and an HMAC-SHA256 signed <code>ProofReceipt</code>.
+              </p>
+
+              <div className="code-output-grid">
+                <div className="field-group">
+                  <div className="field-label">
+                    <span>1. PYTHON SDK CLIENT (sdk/proofbox.py)</span>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      style={{ minHeight: '26px', padding: '2px 8px', fontSize: '10px' }}
+                      onClick={() => copyText('py', pythonSdkSnippet)}
+                    >
+                      {copiedSnippet === 'py' ? <Check size={11} /> : <Copy size={11} />}
+                      <span>{copiedSnippet === 'py' ? 'Copied!' : 'Copy Python'}</span>
+                    </button>
+                  </div>
+                  <pre className="code-block" style={{ maxHeight: '300px' }}>
+                    {pythonSdkSnippet}
+                  </pre>
+                </div>
+
+                <div className="field-group">
+                  <div className="field-label">
+                    <span>2. REST API CURL (POST /api/v1/sandboxes/exec)</span>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      style={{ minHeight: '26px', padding: '2px 8px', fontSize: '10px' }}
+                      onClick={() => copyText('curl', curlSnippet)}
+                    >
+                      {copiedSnippet === 'curl' ? <Check size={11} /> : <Copy size={11} />}
+                      <span>{copiedSnippet === 'curl' ? 'Copied!' : 'Copy cURL'}</span>
+                    </button>
+                  </div>
+                  <pre className="code-block" style={{ maxHeight: '300px' }}>
+                    {curlSnippet}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </section>
         )}
 
         {/* VIEW 2: RED-TEAM CONTAINMENT MATRIX */}
