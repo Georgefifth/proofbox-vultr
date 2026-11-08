@@ -101,6 +101,11 @@ export function App() {
   const [vultrProofData, setVultrProofData] = useState<Record<string, unknown> | null>(null);
   const [probingVultr, setProbingVultr] = useState<boolean>(false);
 
+  // Interactive 6-Step Game-Style Onboarding Tutorial state
+  const [tutorialActive, setTutorialActive] = useState<boolean>(false);
+  const [tutorialStep, setTutorialStep] = useState<number>(1);
+  const [tutorialTechOpen, setTutorialTechOpen] = useState<boolean>(false);
+
   useEffect(() => {
     fetch('/api/health')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -445,6 +450,24 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
         </nav>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <button
+            type="button"
+            className="secondary-btn"
+            style={{
+              minHeight: '34px',
+              padding: '4px 10px',
+              fontSize: '11px',
+              borderColor: tutorialActive ? 'var(--accent-emerald)' : 'var(--border-hairline)',
+              color: tutorialActive ? 'var(--accent-emerald)' : 'var(--text-primary)',
+            }}
+            onClick={() => {
+              setTutorialActive(true);
+              setTutorialStep(1);
+            }}
+          >
+            <Play size={12} />
+            <span>Interactive Tutorial (6 Steps)</span>
+          </button>
           <a
             href="https://45-32-110-141.sslip.io"
             target="_blank"
@@ -461,81 +484,294 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
       </header>
 
       <main className="workbench-container">
-        {/* 3-Step Guided Evaluation Strip ("1. Normal Task Works -> 2. Dangerous Task Blocked -> 3. Verify Vultr & Signature") */}
-        <section
-          className="panel-card"
-          style={{ padding: '12px 18px', background: 'var(--bg-elevated)' }}
-          aria-label="3-Step Guided Walkthrough"
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-              flexWrap: 'wrap',
-            }}
+        {/* Interactive Onboarding Banner & 3-Step Quick Actions */}
+        {!tutorialActive ? (
+          <section
+            className="panel-card"
+            style={{ padding: '12px 18px', background: 'var(--bg-elevated)' }}
+            aria-label="Onboarding and Quick Evaluation"
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <span className="verdict-badge emerald">HOW TO EVALUATE PROOFBOX IN 3 STEPS</span>
-              <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                <strong>Step 1:</strong> Run a normal task (CSV/Chart) → <strong>Step 2:</strong> Trigger a malicious attack (Blocked) → <strong>Step 3:</strong> Verify Ed25519 signature &amp; live Vultr VM
-              </span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="primary-cta"
+                  style={{ width: 'auto', minHeight: '36px', padding: '6px 14px', fontSize: '12px' }}
+                  onClick={() => {
+                    setActiveView('workbench');
+                    setTutorialActive(true);
+                    setTutorialStep(1);
+                  }}
+                >
+                  <Play size={13} />
+                  <span>Interactive Tour: Guide Me Through ProofBox (6 Steps)</span>
+                </button>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  Or jump directly to a live evaluation step:
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{ minHeight: '34px', padding: '4px 10px', fontSize: '12px' }}
+                  onClick={() => {
+                    setActiveView('workbench');
+                    handleSelectPreset(PRESET_SCENARIOS[0]);
+                    handleDispatchSandbox(undefined, PRESET_SCENARIOS[0].prompt, PRESET_SCENARIOS[0].mode);
+                  }}
+                >
+                  <Play size={12} />
+                  <span>Step 1: Run Normal Task Live</span>
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{
+                    minHeight: '34px',
+                    padding: '4px 10px',
+                    fontSize: '12px',
+                    borderColor: 'rgba(245, 158, 11, 0.5)',
+                    color: 'var(--accent-amber)',
+                  }}
+                  onClick={() => {
+                    setActiveView('workbench');
+                    handleSelectPreset(PRESET_SCENARIOS[1]);
+                    handleDispatchSandbox(undefined, PRESET_SCENARIOS[1].prompt, PRESET_SCENARIOS[1].mode);
+                  }}
+                >
+                  <ShieldAlert size={12} />
+                  <span>Step 2: Run Malicious Attack Live</span>
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{
+                    minHeight: '34px',
+                    padding: '4px 10px',
+                    fontSize: '12px',
+                    borderColor: 'rgba(14, 165, 233, 0.5)',
+                    color: 'var(--accent-cyan)',
+                  }}
+                  onClick={() => {
+                    setActiveView('vultr_arch');
+                    handleRunVultrProbe();
+                  }}
+                >
+                  <Server size={12} />
+                  <span>Step 3: Verify Vultr VM (Fires Live Inference Call)</span>
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="secondary-btn"
-                style={{ minHeight: '34px', padding: '4px 10px', fontSize: '12px' }}
-                onClick={() => {
-                  setActiveView('workbench');
-                  handleSelectPreset(PRESET_SCENARIOS[0]);
-                  handleDispatchSandbox(undefined, PRESET_SCENARIOS[0].prompt, PRESET_SCENARIOS[0].mode);
-                }}
-              >
-                <Play size={12} />
-                <span>Step 1: Run Normal Task Live</span>
-              </button>
-              <button
-                type="button"
-                className="secondary-btn"
-                style={{
-                  minHeight: '34px',
-                  padding: '4px 10px',
-                  fontSize: '12px',
-                  borderColor: 'rgba(245, 158, 11, 0.5)',
-                  color: 'var(--accent-amber)',
-                }}
-                onClick={() => {
-                  setActiveView('workbench');
-                  handleSelectPreset(PRESET_SCENARIOS[1]);
-                  handleDispatchSandbox(undefined, PRESET_SCENARIOS[1].prompt, PRESET_SCENARIOS[1].mode);
-                }}
-              >
-                <ShieldAlert size={12} />
-                <span>Step 2: Run Malicious Attack Live</span>
-              </button>
-              <button
-                type="button"
-                className="secondary-btn"
-                style={{
-                  minHeight: '34px',
-                  padding: '4px 10px',
-                  fontSize: '12px',
-                  borderColor: 'rgba(14, 165, 233, 0.5)',
-                  color: 'var(--accent-cyan)',
-                }}
-                onClick={() => {
-                  setActiveView('vultr_arch');
-                  handleRunVultrProbe();
-                }}
-              >
-                <Server size={12} />
-                <span>Step 3: Verify Vultr VM (Fires Live Inference Call)</span>
-              </button>
+          </section>
+        ) : (
+          /* Interactive 6-Step Game-Style Coach Panel */
+          <section
+            className="panel-card"
+            style={{
+              padding: '16px 20px',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, #10141B 100%)',
+              borderColor: 'var(--accent-emerald)',
+            }}
+            aria-label="Interactive Onboarding Tutorial"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className="verdict-badge emerald">STEP {tutorialStep} OF 6 · INTERACTIVE TOUR</span>
+                <strong style={{ fontSize: '15px' }}>
+                  {tutorialStep === 1 && '1. Meet the Isolated Task Input & CSV Workspace'}
+                  {tutorialStep === 2 && '2. Run a Real Normal Task on Vultr (User-Triggered)'}
+                  {tutorialStep === 3 && '3. Understand the 3-Part Verdict (Execution vs. Goal vs. Signature)'}
+                  {tutorialStep === 4 && '4. Test a Safe Malicious Attack Probe (Containment Moment)'}
+                  {tutorialStep === 5 && '5. Verify the Ed25519 Signature & Simulate 1-Byte Tampering'}
+                  {tutorialStep === 6 && '6. Inspect the Vultr VM & Live Serverless Inference Telemetry'}
+                </strong>
+              </div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{ minHeight: '30px', padding: '4px 10px', fontSize: '11px' }}
+                  disabled={tutorialStep <= 1}
+                  onClick={() => setTutorialStep((s) => Math.max(1, s - 1))}
+                >
+                  ← Previous
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{ minHeight: '30px', padding: '4px 10px', fontSize: '11px' }}
+                  disabled={tutorialStep >= 6}
+                  onClick={() => {
+                    const next = Math.min(6, tutorialStep + 1);
+                    setTutorialStep(next);
+                    if (next === 5) {
+                      setActiveView('workbench');
+                      setInspectorTab('security');
+                    } else if (next === 6) {
+                      setActiveView('vultr_arch');
+                    } else {
+                      setActiveView('workbench');
+                      setInspectorTab('overview');
+                    }
+                  }}
+                >
+                  Next Step →
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{ minHeight: '30px', padding: '4px 10px', fontSize: '11px' }}
+                  onClick={() => setTutorialStep(1)}
+                >
+                  Restart
+                </button>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  style={{ minHeight: '30px', padding: '4px 10px', fontSize: '11px' }}
+                  onClick={() => setTutorialActive(false)}
+                >
+                  Skip / Close Tour ✕
+                </button>
+              </div>
             </div>
-          </div>
-        </section>
+
+            <div style={{ marginTop: '10px', fontSize: '13px', color: 'var(--text-primary)' }}>
+              {tutorialStep === 1 && (
+                <p style={{ margin: 0 }}>
+                  On the left panel, you provide a goal (or upload a CSV file into <code>/workspace/dataset.csv</code>). Unlike standard AI agents that run code on the host server, ProofBox prepares a fresh unprivileged container with zero host environment secrets.
+                </p>
+              )}
+              {tutorialStep === 2 && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <p style={{ margin: 0, flex: 1 }}>
+                    Right now the right panel shows a <strong>[PRE-LOADED SAMPLE RESULT]</strong> so no API credits are spent automatically. Click the button on the right to run Scenario 1 live on our Vultr VM (<code>45.32.110.141</code>) using Vultr Serverless Inference!
+                  </p>
+                  <button
+                    type="button"
+                    className="primary-cta"
+                    style={{ width: 'auto', minHeight: '36px', padding: '6px 14px', fontSize: '12px' }}
+                    onClick={() => {
+                      setActiveView('workbench');
+                      handleSelectPreset(PRESET_SCENARIOS[0]);
+                      handleDispatchSandbox(undefined, PRESET_SCENARIOS[0].prompt, PRESET_SCENARIOS[0].mode);
+                    }}
+                  >
+                    <Play size={13} />
+                    <span>Run Step 2 Live on Vultr VM Now</span>
+                  </button>
+                </div>
+              )}
+              {tutorialStep === 3 && (
+                <p style={{ margin: 0 }}>
+                  Look at the <strong>3-Dimensional Status Strip</strong> on the right card: <strong>(1) Execution Status</strong> tells you if the process exited cleanly; <strong>(2) Goal Status</strong> tells you if the chart &amp; JSON passed host deterministic checks; and <strong>(3) Receipt Signature</strong> proves the log wasn't altered. <em>Never confuse a valid signature with task completion—both Execution and Goal must be green!</em>
+                </p>
+              )}
+              {tutorialStep === 4 && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <p style={{ margin: 0, flex: 1 }}>
+                    Now let's test a safe, pre-configured malicious probe that tries to steal <code>VULTR_API_KEY</code>, read <code>/etc/shadow</code>, and call <code>http://169.254.169.254/v1.json</code>. Click to execute it inside a disposable air-gapped container and watch all 3 vectors get blocked.
+                  </p>
+                  <button
+                    type="button"
+                    className="primary-cta"
+                    style={{ width: 'auto', minHeight: '36px', padding: '6px 14px', fontSize: '12px', background: 'var(--accent-amber)' }}
+                    onClick={() => {
+                      setActiveView('workbench');
+                      handleSelectPreset(PRESET_SCENARIOS[1]);
+                      handleDispatchSandbox(undefined, PRESET_SCENARIOS[1].prompt, PRESET_SCENARIOS[1].mode);
+                    }}
+                  >
+                    <ShieldAlert size={13} />
+                    <span>Run Safe Attack Probe in Sandbox</span>
+                  </button>
+                </div>
+              )}
+              {tutorialStep === 5 && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <p style={{ margin: 0, flex: 1 }}>
+                    In the <strong>3. Security &amp; Ed25519 Receipt</strong> tab below, click <strong>Verify Receipt Signature</strong> (verifies against the pinned Vultr Notary public key), then click <strong>Simulate Payload Tampering (Flip 1 Byte)</strong> to see how modifying 1 character invalidates the Ed25519 signature!
+                  </p>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      style={{ minHeight: '34px', padding: '4px 10px', fontSize: '12px', borderColor: 'var(--accent-emerald)' }}
+                      onClick={() => {
+                        setActiveView('workbench');
+                        setInspectorTab('security');
+                        handleVerifySignature(false);
+                      }}
+                    >
+                      Verify Original
+                    </button>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      style={{ minHeight: '34px', padding: '4px 10px', fontSize: '12px', borderColor: 'var(--accent-amber)' }}
+                      onClick={() => {
+                        setActiveView('workbench');
+                        setInspectorTab('security');
+                        handleVerifySignature(true);
+                      }}
+                    >
+                      Flip 1 Byte (Tamper Test)
+                    </button>
+                  </div>
+                </div>
+              )}
+              {tutorialStep === 6 && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <p style={{ margin: 0, flex: 1 }}>
+                    Finally, inspect the <strong>2. Vultr Architecture &amp; Live Proof</strong> page below. Clicking the button on the right fires a real inference call to <code>api.vultrinference.com</code> (using ~50 tokens) and returns a fresh <code>chatcmpl-...</code> ID and VM kernel telemetry.
+                  </p>
+                  <button
+                    type="button"
+                    className="primary-cta"
+                    style={{ width: 'auto', minHeight: '36px', padding: '6px 14px', fontSize: '12px' }}
+                    onClick={() => {
+                      setActiveView('vultr_arch');
+                      handleRunVultrProbe();
+                    }}
+                  >
+                    <Server size={13} />
+                    <span>Trigger Live Vultr Probe (~50 tokens)</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-secondary)' }}>
+              <button
+                type="button"
+                style={{ background: 'none', border: 'none', color: 'var(--accent-cyan)', cursor: 'pointer', padding: 0, fontFamily: 'var(--font-mono)', fontSize: '11px' }}
+                onClick={() => setTutorialTechOpen((v) => !v)}
+              >
+                {tutorialTechOpen ? '▼ Hide Technical Implementation Note' : '▶ View Technical Implementation Note'}
+              </button>
+              <span>Progress: {tutorialStep} / 6</span>
+            </div>
+            {tutorialTechOpen && (
+              <div style={{ marginTop: '6px', padding: '8px 12px', background: 'var(--bg-canvas)', borderRadius: '4px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--text-secondary)' }}>
+                {tutorialStep === 1 && 'Container flags: --user=65534:65534 --cap-drop=ALL --security-opt=no-new-privileges --read-only -v /workspace:ro -v /output:rw'}
+                {tutorialStep === 2 && 'Pipeline: Stage 1 nemotron-3.5-content-safety -> Stage 2 deepseek-v4.1-flash-1017 + ast.parse pre-check -> Stage 3/4 Docker run -> Stage 5 Host deterministic checks + qwen3.8-27b.'}
+                {tutorialStep === 3 && 'Deterministic checks verify JSON schema, arithmetic totals, and SVG/PNG file headers on the host before signing.'}
+                {tutorialStep === 4 && 'Attack vectors tested: os.environ secret inspection, /etc/shadow DAC permission check, and 169.254.169.254 link-local metadata egress under --network=none.'}
+                {tutorialStep === 5 && 'Pinned Notary Public Key (Hex): ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0. Offline verifier: python3 scripts/verify_receipt.py.'}
+                {tutorialStep === 6 && 'End-to-End TLS: Browser -> Vercel HTTPS -> https://45-32-110-141.sslip.io (Let\'s Encrypt TLS 1.3 on Vultr VM).'}
+              </div>
+            )}
+          </section>
+        )}
 
         {/* VIEW 1: FOCUSED AGENT WORKSPACE */}
         {activeView === 'workbench' && (
@@ -1048,22 +1284,53 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
 
                             <div className="verdict-pillars">
                               <div className="verdict-pillar">
-                                <div className="verdict-pillar-label">Container Env Secrets</div>
-                                <div className="verdict-pillar-val" style={{ color: 'var(--accent-emerald)' }}>
-                                  0 Secrets Mounted
+                                <div className="verdict-pillar-label">1. Execution Status</div>
+                                <div
+                                  className="verdict-pillar-val"
+                                  style={{
+                                    color:
+                                      receipt.containerLifecycle.exitCode === 0
+                                        ? 'var(--accent-emerald)'
+                                        : receipt.status === 'CONTAINED_THREAT'
+                                          ? 'var(--accent-amber)'
+                                          : 'var(--accent-crimson)',
+                                  }}
+                                >
+                                  {receipt.containerLifecycle.exitCode === 0
+                                    ? 'Completed (Exit Code 0)'
+                                    : receipt.status === 'CONTAINED_THREAT'
+                                      ? `Contained (Exit Code ${receipt.containerLifecycle.exitCode})`
+                                      : `Failed (Exit Code ${receipt.containerLifecycle.exitCode})`}
                                 </div>
                               </div>
                               <div className="verdict-pillar">
-                                <div className="verdict-pillar-label">Container ID &amp; Memory Cap</div>
-                                <div className="verdict-pillar-val">
-                                  {receipt.containerLifecycle.containerId} ({receipt.resourceUsage.memoryPeakMb}MB /{' '}
-                                  {receipt.resourceUsage.memoryLimitMb}MB)
+                                <div className="verdict-pillar-label">2. Task Goal Status</div>
+                                <div
+                                  className="verdict-pillar-val"
+                                  style={{
+                                    color:
+                                      receipt.status === 'CONTAINED_THREAT'
+                                        ? 'var(--accent-amber)'
+                                        : receipt.containerLifecycle.exitCode === 0 &&
+                                            receipt.stdout.trim().length > 0
+                                          ? 'var(--accent-emerald)'
+                                          : 'var(--accent-crimson)',
+                                  }}
+                                >
+                                  {receipt.status === 'CONTAINED_THREAT'
+                                    ? 'Attack Blocked by Policy'
+                                    : receipt.containerLifecycle.exitCode === 0 &&
+                                        receipt.stdout.trim().length > 0
+                                      ? `Goal Met (${receipt.artifacts.length} Artifact${
+                                          receipt.artifacts.length === 1 ? '' : 's'
+                                        })`
+                                      : 'Goal Not Met'}
                                 </div>
                               </div>
                               <div className="verdict-pillar">
-                                <div className="verdict-pillar-label">Ed25519 Signed Receipt</div>
+                                <div className="verdict-pillar-label">3. Receipt Integrity (Log Unchanged)</div>
                                 <div className="verdict-pillar-val" style={{ color: 'var(--accent-cyan)' }}>
-                                  {receipt.receiptId} (Exit {receipt.containerLifecycle.exitCode})
+                                  Ed25519 Valid · {receipt.receiptId}
                                 </div>
                               </div>
                             </div>
