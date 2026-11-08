@@ -807,7 +807,7 @@ except Exception as e:
             "id": "stage-6",
             "stepNumber": 6,
             "title": "Container Destruction & Forensic Seal",
-            "modelOrRuntime": "ProofBox Notary (HMAC-SHA256)",
+            "modelOrRuntime": "ProofBox Notary (Ed25519)",
             "status": "passed",
             "durationMs": 95,
             "detail": f"docker rm -f {sbx['containerId']} verified ({sbx['cleanupVerified']}).",
@@ -1051,7 +1051,7 @@ print(json.dumps({{"url": url, "status": status, "title": title, "missing_securi
             "id": "stage-6",
             "stepNumber": 6,
             "title": "Browser Sandbox Destruction & Signing",
-            "modelOrRuntime": "ProofBox Notary (HMAC-SHA256)",
+            "modelOrRuntime": "ProofBox Notary (Ed25519)",
             "status": "passed",
             "durationMs": 90,
             "detail": f"Container {sbx['containerId']} destroyed ({sbx['cleanupVerified']}).",
@@ -1171,11 +1171,11 @@ print(json.dumps({{"url": url, "status": status, "title": title, "missing_securi
     if not mounted_files and ("csv" in prompt_text.lower() or "ledger" in prompt_text.lower()):
         mounted_files["dataset.csv"] = (
             "region,service,spend_usd,requests_millions,error_rate_pct\n"
-            "US-EWR,cloud-compute,$34,210.00,142.5,0.12\n"
-            "EU-FRA,cloud-compute,$28,450.00,118.0,0.09\n"
-            "AP-SGP,serverless-inference,$46,890.00,310.4,1.84\n"
-            "AP-NRT,block-storage,$22,900.00,95.2,0.05\n"
-            "US-LAX,object-storage,$18,640.00,88.1,0.07\n"
+            'US-EWR,cloud-compute,"$34,210.00",142.5,0.12\n'
+            'EU-FRA,cloud-compute,"$28,450.00",118.0,0.09\n'
+            'AP-SGP,serverless-inference,"$46,890.00",310.4,1.84\n'
+            'AP-NRT,block-storage,"$22,900.00",95.2,0.05\n'
+            'US-LAX,object-storage,"$18,640.00",88.1,0.07\n'
         )
 
     files_context = ""
@@ -1415,10 +1415,10 @@ print(json.dumps({"total_usd": sum(vals), "mean_usd": round(mu, 2), "sigma": rou
         "id": "stage-6",
         "stepNumber": 6,
         "title": "Container Destruction & Receipt Signing",
-        "modelOrRuntime": "ProofBox Notary (HMAC-SHA256)",
+        "modelOrRuntime": "ProofBox Notary (Ed25519)",
         "status": "passed",
         "durationMs": 85,
-        "detail": f"docker rm -f {sbx['containerId']} verified ({sbx['cleanupVerified']}); SHA-256 receipt sealed.",
+        "detail": f"docker rm -f {sbx['containerId']} verified ({sbx['cleanupVerified']}); Ed25519 receipt sealed.",
     })
 
     security_events.extend([

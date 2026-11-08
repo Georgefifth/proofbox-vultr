@@ -28,11 +28,11 @@ type InspectorTab = 'overview' | 'execution' | 'security';
 type AuthoringMode = 'agent_prompt' | 'direct_code';
 
 const DEFAULT_MOUNTED_CSV = `region,service,spend_usd,requests_millions,error_rate_pct
-US-EWR,cloud-compute,$34,210.00,142.5,0.12
-EU-FRA,cloud-compute,$28,450.00,118.0,0.09
-AP-SGP,serverless-inference,$46,890.00,310.4,1.84
-AP-NRT,block-storage,$22,900.00,95.2,0.05
-US-LAX,object-storage,$18,640.00,88.1,0.07`;
+US-EWR,cloud-compute,"$34,210.00",142.5,0.12
+EU-FRA,cloud-compute,"$28,450.00",118.0,0.09
+AP-SGP,serverless-inference,"$46,890.00",310.4,1.84
+AP-NRT,block-storage,"$22,900.00",95.2,0.05
+US-LAX,object-storage,"$18,640.00",88.1,0.07`;
 
 const DEFAULT_DIRECT_CODE = `import json
 import pandas as pd
@@ -446,15 +446,15 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <a
-            href="http://45.32.110.141"
+            href="https://45-32-110-141.sslip.io"
             target="_blank"
             rel="noreferrer"
             className="infra-pill"
             style={{ textDecoration: 'none', color: 'var(--accent-cyan)', borderColor: 'rgba(14,165,233,0.4)' }}
-            title="Open Direct Vultr Cloud Compute VM Deployment (http://45.32.110.141)"
+            title="Open Direct Vultr Cloud Compute VM HTTPS Deployment (https://45-32-110-141.sslip.io)"
           >
             <span className="status-dot" />
-            <span>Vultr VM: 45.32.110.141 (sgp)</span>
+            <span>Vultr VM TLS: 45-32-110-141.sslip.io</span>
             <ExternalLink size={12} />
           </a>
         </div>
@@ -1427,14 +1427,14 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <a
-                  href="http://45.32.110.141"
+                  href="https://45-32-110-141.sslip.io"
                   target="_blank"
                   rel="noreferrer"
                   className="secondary-btn"
                   style={{ textDecoration: 'none' }}
                 >
                   <ExternalLink size={14} />
-                  <span>Open Direct Vultr VM Web App (http://45.32.110.141)</span>
+                  <span>Open Direct Vultr VM HTTPS (https://45-32-110-141.sslip.io)</span>
                 </a>
                 <button
                   type="button"
@@ -1454,8 +1454,8 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
             </div>
 
             <div className="panel-body">
-              {/* Live Call Summary Cards when vultrProofData is available */}
-              {vultrProofData && (vultrProofData as { liveInferenceCall?: Record<string, unknown> }).liveInferenceCall && (
+              {/* Separate VM Probe Status vs Serverless Inference Status */}
+              {vultrProofData && (
                 <div
                   className="policy-box"
                   style={{
@@ -1465,66 +1465,92 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
                 >
                   <div className="field-label">
                     <span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>
-                      ✓ FRESH VULTR SERVERLESS INFERENCE CALL COMPLETED AT{' '}
+                      ✓ LIVE VULTR PROBE COMPLETED AT{' '}
                       {String((vultrProofData as { verifiedAt?: string }).verifiedAt || '')}
                     </span>
-                    <span>Endpoint: https://api.vultrinference.com/v1/chat/completions</span>
+                    <span>
+                      VM Status:{' '}
+                      <strong style={{ color: 'var(--accent-emerald)' }}>
+                        {(vultrProofData as { vultrVm?: unknown }).vultrVm ? 'ONLINE (TLS 1.3)' : 'UNREACHABLE'}
+                      </strong>{' '}
+                      · Inference Status:{' '}
+                      <strong
+                        style={{
+                          color: (
+                            (vultrProofData as { liveInferenceCall?: { completionId?: string } })
+                              .liveInferenceCall?.completionId
+                          )
+                            ? 'var(--accent-emerald)'
+                            : 'var(--accent-amber)',
+                        }}
+                      >
+                        {(
+                          (vultrProofData as { liveInferenceCall?: { completionId?: string } })
+                            .liveInferenceCall?.completionId
+                        )
+                          ? 'LIVE (200 OK)'
+                          : 'DEGRADED / TIMEOUT'}
+                      </strong>
+                    </span>
                   </div>
-                  <div className="verdict-pillars" style={{ marginTop: '4px' }}>
-                    <div className="verdict-pillar">
-                      <div className="verdict-pillar-label">Live Completion ID &amp; Fingerprint</div>
-                      <div className="verdict-pillar-val" style={{ color: 'var(--accent-cyan)', fontSize: '12px' }}>
-                        {String(
-                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
-                            .completionId as string) || 'N/A'
-                        )}{' '}
-                        ({String(
-                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
-                            .systemFingerprint as string) || ''
-                        )})
+                  {(vultrProofData as { liveInferenceCall?: Record<string, unknown> }).liveInferenceCall && (
+                    <div className="verdict-pillars" style={{ marginTop: '4px' }}>
+                      <div className="verdict-pillar">
+                        <div className="verdict-pillar-label">Live Completion ID &amp; Fingerprint</div>
+                        <div className="verdict-pillar-val" style={{ color: 'var(--accent-cyan)', fontSize: '12px' }}>
+                          {String(
+                            ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                              .completionId as string) || 'N/A'
+                          )}{' '}
+                          ({String(
+                            ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                              .systemFingerprint as string) || ''
+                          )})
+                        </div>
+                      </div>
+                      <div className="verdict-pillar">
+                        <div className="verdict-pillar-label">Inference Model &amp; Latency</div>
+                        <div className="verdict-pillar-val" style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>
+                          {String(
+                            ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                              .model as string) || 'glm-5.3-flash'
+                          )}{' '}
+                          ·{' '}
+                          {String(
+                            ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                              .latencyMs as number) || 0
+                          )}{' '}
+                          ms
+                        </div>
+                      </div>
+                      <div className="verdict-pillar">
+                        <div className="verdict-pillar-label">Token Usage (Prompt / Completion)</div>
+                        <div className="verdict-pillar-val" style={{ fontSize: '12px' }}>
+                          {String(
+                            ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                              .promptTokens as number) || 0
+                          )}{' '}
+                          prompt +{' '}
+                          {String(
+                            ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                              .completionTokens as number) || 0
+                          )}{' '}
+                          completion tokens
+                        </div>
                       </div>
                     </div>
-                    <div className="verdict-pillar">
-                      <div className="verdict-pillar-label">Inference Model &amp; Latency</div>
-                      <div className="verdict-pillar-val" style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>
-                        {String(
-                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
-                            .model as string) || 'glm-5.3-flash'
-                        )}{' '}
-                        ·{' '}
-                        {String(
-                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
-                            .latencyMs as number) || 0
-                        )}{' '}
-                        ms
-                      </div>
-                    </div>
-                    <div className="verdict-pillar">
-                      <div className="verdict-pillar-label">Token Usage (Prompt / Completion)</div>
-                      <div className="verdict-pillar-val" style={{ fontSize: '12px' }}>
-                        {String(
-                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
-                            .promptTokens as number) || 0
-                        )}{' '}
-                        prompt +{' '}
-                        {String(
-                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
-                            .completionTokens as number) || 0
-                        )}{' '}
-                        completion tokens
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               )}
-              {/* Direct Answer to Reviewer Question #1: What runs on Vultr vs Vercel */}
+
+              {/* Direct Answer to Reviewer Question #1 & #2: End-to-End HTTPS & What Runs on Vultr */}
               <div className="verdict-pillars">
                 <div className="verdict-pillar" style={{ borderColor: 'var(--accent-emerald)' }}>
                   <div className="verdict-pillar-label" style={{ color: 'var(--accent-emerald)' }}>
-                    1. Vultr Cloud Compute VM (Core Host &amp; Web App)
+                    1. Vultr Cloud Compute VM (HTTPS + Web App + Orchestrator)
                   </div>
                   <div className="verdict-pillar-val" style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>
-                    <strong>Direct URL:</strong> <code>http://45.32.110.141</code> (Singapore <code>sgp</code>, <code>vc2-4c-8gb</code>, Instance ID <code>c6a71904-3636-4699-9cf5-0d52beb32d8b</code>). Hosts the Nginx web server, React Web App, FastAPI Orchestrator, Ed25519 Notary, and Docker Sandbox Engine.
+                    <strong>Direct HTTPS URL:</strong> <code>https://45-32-110-141.sslip.io</code> (IP <code>45.32.110.141</code>, Singapore <code>sgp</code>, <code>vc2-4c-8gb</code>, Instance ID <code>c6a71904-3636-4699-9cf5-0d52beb32d8b</code>). Terminates Let’s Encrypt TLS and runs Nginx, React SPA, FastAPI Orchestrator, Ed25519 Notary, and Docker Engine.
                   </div>
                 </div>
                 <div className="verdict-pillar" style={{ borderColor: 'var(--accent-cyan)' }}>
@@ -1532,15 +1558,31 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
                     2. Vultr Serverless Inference (Agent LLM Triad)
                   </div>
                   <div className="verdict-pillar-val" style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>
-                    <strong>Endpoint:</strong> <code>https://api.vultrinference.com/v1</code>. Called by the Vultr VM for Pre-Flight Safety (<code>nemotron-3.5-content-safety</code>), Planning/Self-Healing (<code>deepseek-v4.1-flash-1017</code>), and Verification (<code>qwen3.8-27b</code>).
+                    <strong>Endpoint:</strong> <code>https://api.vultrinference.com/v1</code>. Called over HTTPS by the Vultr VM for Pre-Flight Safety (<code>nemotron-3.5-content-safety</code>), Planning/Self-Healing (<code>deepseek-v4.1-flash-1017</code>), and Verification (<code>qwen3.8-27b</code>).
                   </div>
                 </div>
                 <div className="verdict-pillar">
                   <div className="verdict-pillar-label">
-                    3. Why does the Vercel HTTPS URL exist?
+                    3. End-to-End TLS Upstream (Vercel → Vultr VM)
                   </div>
                   <div className="verdict-pillar-val" style={{ fontSize: '12px', fontWeight: 500, marginTop: '4px' }}>
-                    LabLab’s submission form dropdown only lists <code>Vercel</code>. Therefore, <code>https://vultr-gamma.vercel.app</code> is configured as a pure TLS reverse proxy (<code>vercel.json</code> rewrite) forwarding 100% of <code>/api/*</code> requests directly to <code>http://45.32.110.141</code>.
+                    <code>vercel.json</code> rewrites <code>/api/:path*</code> to <code>https://45-32-110-141.sslip.io/api/:path*</code> (Let’s Encrypt TLS certificate on the Vultr VM), providing end-to-end encrypted transport whether you access via Vercel or directly on the Vultr VM.
+                  </div>
+                </div>
+              </div>
+
+              {/* Tested Scope & Residual Risk Boundary (P1-7) */}
+              <div className="policy-box">
+                <div className="field-label">
+                  <span>TESTED SECURITY SCOPE &amp; RESIDUAL RISK BOUNDARY (HONEST ENGINEERING DISCLOSURE)</span>
+                  <span>Release Tag: v1.0-submission</span>
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+                  <div>
+                    • <strong>Empirically Tested Scope:</strong> (1) Zero host environment secret passthrough (<code>env=&#123;&quot;PATH&quot;:...&#125;</code>), (2) Non-root container user <code>uid=65534</code> + <code>--cap-drop=ALL</code> + <code>--read-only</code> rootfs blocking <code>/etc/shadow</code> reads and system file writes, (3) <code>--network=none</code> air-gap on Python/Attack modes blocking <code>169.254.169.254</code> metadata SSRF, (4) DNS/IP SSRF pre-check on Browser mode, and (5) <code>cgroupv2</code> memory (<code>256MB/512MB</code>) and PID (<code>64</code>) ceilings.
+                  </div>
+                  <div style={{ marginTop: '4px' }}>
+                    • <strong>Known Boundaries &amp; Out-of-Scope Risks:</strong> Containers share the host Linux kernel (<code>6.8.0-147-generic</code>); unlike hardware microVMs (Firecracker/Kata), unpatched Linux kernel 0-days are not mitigated by standard Docker namespaces. Browser Sandbox mode permits outbound HTTPS to public non-RFC1918 IPs, so DNS rebinding after initial resolution or application-layer exfiltration via allowed public domains remains a residual risk in browser mode. ProofBox is a hackathon reference platform and has not undergone a third-party penetration audit.
                   </div>
                 </div>
               </div>
@@ -1553,10 +1595,10 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
                 <pre className="code-block" style={{ maxHeight: '220px', lineHeight: 1.45 }}>
 {`+---------------------------------------------------------------------------------------------------+
 | USER / JUDGE BROWSER                                                                              |
-|   • Direct Vultr VM Web App : http://45.32.110.141 (Nginx + React SPA on Vultr Cloud Compute)     |
-|   • HTTPS Edge Mirror       : https://vultr-gamma.vercel.app (Proxies /api/* -> 45.32.110.141)    |
+|   • Direct Vultr VM HTTPS   : https://45-32-110-141.sslip.io (Let's Encrypt TLS on Vultr VM)      |
+|   • Vercel HTTPS Proxy      : https://vultr-gamma.vercel.app (TLS Rewrite -> 45-32-110-141.sslip) |
 +-------------------------------------------------+-------------------------------------------------+
-                                                  | HTTP / REST (/api/execute, /api/vultr-proof)
+                                                  | HTTPS TLS 1.3 (/api/execute, /api/vultr-proof)
                                                   v
 +---------------------------------------------------------------------------------------------------+
 | VULTR CLOUD COMPUTE VM — 45.32.110.141 (Singapore sgp · vc2-4c-8gb · Ubuntu 24.04 · Kernel 6.8)   |

@@ -52,7 +52,7 @@ class Sandbox:
         )
         print(result.stdout)
         print("Container destroyed:", result.cleanup_verified)
-        print("HMAC-SHA256 Receipt:", result.receipt_signature_sha256)
+        print("Ed25519 Receipt Signature:", result.receipt_signature_sha256)
     """
 
     def __init__(self, base_url: str = "http://45.32.110.141", timeout: float = 30.0):

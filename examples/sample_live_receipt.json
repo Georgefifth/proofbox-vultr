@@ -1,0 +1,170 @@
+{
+    "receiptId": "rcpt-b9f70665",
+    "taskTitle": "[Direct Developer SDK Execution] (182 bytes code, 0 mounte...",
+    "prompt": "[Direct Developer SDK Execution] (182 bytes code, 0 mounted files)",
+    "mode": "code_sandbox",
+    "status": "VERIFIED_EXECUTION",
+    "createdAt": "2026-11-08T17:05:24.168001+00:00",
+    "totalDurationMs": 4381,
+    "vultrInfra": {
+        "vmHostname": "proofbox-vultr (Vultr Cloud Compute)",
+        "vmRegion": "Singapore (sgp)",
+        "inferenceEndpoint": "https://api.vultrinference.com/v1",
+        "safetyModel": "nemotron-3.5-content-safety",
+        "plannerModel": "deepseek-v4.1-flash-1017",
+        "verifierModel": "qwen3.8-27b"
+    },
+    "containerLifecycle": {
+        "containerId": "sbx-py-ad1feb3925b0",
+        "image": "proofbox/runtime:latest (uid=65534 \u00b7 pandas+matplotlib+playwright)",
+        "isolationFlags": [
+            "--network=none",
+            "--cap-drop=ALL",
+            "--security-opt=no-new-privileges",
+            "--read-only",
+            "--tmpfs=/tmp:rw,exec,nosuid,size=128m",
+            "--shm-size=256m",
+            "--pids-limit=64",
+            "--memory=512m",
+            "--memory-swap=512m",
+            "--cpus=1.5",
+            "--user=65534:65534"
+        ],
+        "networkPolicy": "AIR_GAPPED (--network=none \u00b7 0 bytes egress)",
+        "secretsInjected": 0,
+        "spawnedAt": "2026-11-08T17:05:21.077886+00:00",
+        "destroyedAt": "2026-11-08T17:05:23.018205+00:00",
+        "cleanupVerified": true,
+        "exitCode": 0
+    },
+    "resourceUsage": {
+        "cpuLimitCores": 1.5,
+        "cpuPeakPercent": 36.8,
+        "memoryLimitMb": 512,
+        "memoryPeakMb": 74.2,
+        "pidsLimit": 64,
+        "pidsPeak": 4,
+        "timeoutSec": 18,
+        "networkEgressBytes": 0
+    },
+    "pipelineStages": [
+        {
+            "id": "stage-1",
+            "stepNumber": 1,
+            "title": "Pre-Flight Safety Gate",
+            "modelOrRuntime": "nemotron-3.5-content-safety",
+            "status": "passed",
+            "durationMs": 1291,
+            "detail": "Nemotron Verdict: User Safety: safe \u00b7 Cleared for sandboxed execution."
+        },
+        {
+            "id": "stage-2",
+            "stepNumber": 2,
+            "title": "Direct Developer Code Loaded",
+            "modelOrRuntime": "Developer IDE / SDK Input",
+            "status": "passed",
+            "durationMs": 12,
+            "detail": "Loaded 182 bytes of developer code + 0 mounted file(s)."
+        },
+        {
+            "id": "stage-3",
+            "stepNumber": 3,
+            "title": "Ephemeral Sandbox Provisioning",
+            "modelOrRuntime": "Docker (proofbox/runtime:latest)",
+            "status": "passed",
+            "durationMs": 155,
+            "detail": "Container sbx-py-ad1feb3925b0 booted with /workspace (ro), /output (rw), & 0 secrets."
+        },
+        {
+            "id": "stage-4",
+            "stepNumber": 4,
+            "title": "Sandboxed Execution & Artifact Harvest",
+            "modelOrRuntime": "Python 3.12 + Pandas/Matplotlib",
+            "status": "passed",
+            "durationMs": 1803,
+            "detail": "Exit Code 0 \u00b7 Harvested 0 real file artifact(s) from /output/."
+        },
+        {
+            "id": "stage-5",
+            "stepNumber": 5,
+            "title": "Multimodal Output Verification",
+            "modelOrRuntime": "qwen3.8-27b",
+            "status": "passed",
+            "durationMs": 1101,
+            "detail": "Verified stdout stream and harvested /output/* artifact SHA-256 digests."
+        },
+        {
+            "id": "stage-6",
+            "stepNumber": 6,
+            "title": "Container Destruction & Receipt Signing",
+            "modelOrRuntime": "ProofBox Notary (Ed25519)",
+            "status": "passed",
+            "durationMs": 85,
+            "detail": "docker rm -f sbx-py-ad1feb3925b0 verified (True); Ed25519 receipt sealed."
+        }
+    ],
+    "generatedCode": "import json, pandas as pd\ndf = pd.DataFrame([{\"region\":\"US-EWR\",\"usd\":34210},{\"region\":\"AP-SGP\",\"usd\":46890}])\nprint(json.dumps({\"total_usd\": int(df[\"usd\"].sum()), \"rows\": len(df)}))",
+    "selfHealingLog": null,
+    "stdout": "{\"total_usd\": 81100, \"rows\": 2}\n",
+    "stderr": "",
+    "verifierSummary": "The execution successfully returned the expected JSON output with a total of $81,100 across 2 rows. However, the goal of harvesting artifacts to `/output` was not met, as the artifact list is empty.",
+    "deterministicChecks": [
+        {
+            "name": "Process Exit & Deterministic Output Check",
+            "passed": true,
+            "detail": "Exit Code 0 \u00b7 Valid structured output (32 bytes)."
+        },
+        {
+            "name": "Air-Gapped Network Isolation (--network=none)",
+            "passed": true,
+            "detail": "0 bytes outbound egress; only loopback interface present in container netns."
+        },
+        {
+            "name": "Host Secret Zero-Exposure Check",
+            "passed": true,
+            "detail": "0 host environment variables mounted inside container."
+        },
+        {
+            "name": "Container Lifecycle Teardown Check",
+            "passed": true,
+            "detail": "docker inspect sbx-py-ad1feb3925b0 confirmed container removal."
+        }
+    ],
+    "securityEvents": [
+        {
+            "timestamp": "17:05:21.077Z",
+            "layer": "NEMOTRON_PREFLIGHT",
+            "severity": "INFO",
+            "vector": "Prompt & Code Intent Audit",
+            "actionTaken": "ALLOWED (User Safety: safe)",
+            "ruleId": "VULTR-NEMOTRON-SAFE"
+        },
+        {
+            "timestamp": "17:05:24.167Z",
+            "layer": "NETNS_FIREWALL",
+            "severity": "INFO",
+            "vector": "Container Network Namespace",
+            "actionTaken": "LOCKED (--network=none, 0 bytes egress)",
+            "ruleId": "NET-AIRGAP-01"
+        },
+        {
+            "timestamp": "17:05:24.167Z",
+            "layer": "DOCKER_CGROUP",
+            "severity": "INFO",
+            "vector": "Secret Hygiene & Read-Only Rootfs",
+            "actionTaken": "VERIFIED (0 host env vars \u00b7 0 ro workspace files)",
+            "ruleId": "SEC-ENV-ZERO"
+        }
+    ],
+    "artifacts": [],
+    "cryptographicProof": {
+        "inputSha256": "8e68c72614346c0772639b7fd52f4b04a0afadc56f5c5f484ceedac5221f6b8b",
+        "codeSha256": "c8ebe1b868b5087e0e214a93ce6ff564d79da47d99902853c125e1bb7a0cf9de",
+        "stdoutSha256": "03a2f3526be807032d8d1e4ed804f61f2f750d5ee737f9f492267c4e7ac7a8ae",
+        "receiptSignatureSha256": "6ddd4a2af3425648116763714d23855b49b6f0b86a6823a69d3f6b4c8574d981e80a24419de710f34183ad83353adaee55b64f88607553ec0bba89e663aa070d",
+        "ed25519PublicKeyHex": "ec5b7757873c502b0a4455c9108777a24b99d79efbbfd12354935cabd81bf1d0",
+        "ed25519PublicKeyPem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA7Ft3V4c8UCsKRFXJEId3okuZ1577v9EjVJNcq9gb8dA=\n-----END PUBLIC KEY-----",
+        "canonicalPayloadJson": "{\"codeSha256\":\"c8ebe1b868b5087e0e214a93ce6ff564d79da47d99902853c125e1bb7a0cf9de\",\"containerId\":\"sbx-py-ad1feb3925b0\",\"destroyedAt\":\"2026-11-08T17:05:23.018205+00:00\",\"exitCode\":0,\"inputSha256\":\"8e68c72614346c0772639b7fd52f4b04a0afadc56f5c5f484ceedac5221f6b8b\",\"receiptId\":\"rcpt-b9f70665\",\"spawnedAt\":\"2026-11-08T17:05:21.077886+00:00\",\"stdoutSha256\":\"03a2f3526be807032d8d1e4ed804f61f2f750d5ee737f9f492267c4e7ac7a8ae\"}",
+        "verificationAlgorithm": "Ed25519 Asymmetric Digital Signature (RFC 8032)"
+    }
+}
