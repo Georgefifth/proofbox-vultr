@@ -32,12 +32,14 @@ def test_code_sandbox_execution_and_receipt_verification():
     assert receipt["containerLifecycle"]["cleanupVerified"] is True
     assert "--network=none" in receipt["containerLifecycle"]["isolationFlags"]
     assert len(receipt["artifacts"]) >= 1
-    assert len(receipt["cryptographicProof"]["receiptSignatureSha256"]) == 64
+    assert len(receipt["cryptographicProof"]["receiptSignatureSha256"]) in (64, 128)
+    assert "ed25519PublicKeyHex" in receipt["cryptographicProof"]
 
     # Verify cryptographic signature via /api/verify-receipt
     v_resp = client.post("/api/verify-receipt", json={"receiptId": receipt["receiptId"], "receipt": receipt})
     assert v_resp.status_code == 200
     assert v_resp.json()["verified"] is True
+    assert v_resp.json()["ed25519Verified"] is True
 
 
 def test_redteam_containment_probe():

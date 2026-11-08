@@ -16,6 +16,12 @@ export interface PipelineStage {
   detail: string;
 }
 
+export interface DeterministicCheck {
+  name: string;
+  passed: boolean;
+  detail: string;
+}
+
 export interface SecurityEvent {
   timestamp: string;
   layer: 'NEMOTRON_PREFLIGHT' | 'AST_POLICY_SCAN' | 'DOCKER_CGROUP' | 'NETNS_FIREWALL' | 'SECCOMP_BPF';
@@ -75,12 +81,16 @@ export interface ProofReceipt {
   pipelineStages: PipelineStage[];
   generatedCode: string;
   selfHealingLog?: {
+    attempt1Code?: string;
     attempt1Error: string;
     patchApplied: string;
+    unifiedDiff?: string;
+    repairModel?: string;
   };
   stdout: string;
   stderr: string;
   verifierSummary: string;
+  deterministicChecks?: DeterministicCheck[];
   securityEvents: SecurityEvent[];
   artifacts: ArtifactItem[];
   cryptographicProof: {
@@ -88,6 +98,9 @@ export interface ProofReceipt {
     codeSha256: string;
     stdoutSha256: string;
     receiptSignatureSha256: string;
+    ed25519PublicKeyHex?: string;
+    ed25519PublicKeyPem?: string;
+    canonicalPayloadJson?: string;
     verificationAlgorithm: string;
   };
 }
