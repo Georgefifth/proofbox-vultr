@@ -531,7 +531,7 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
                 }}
               >
                 <Server size={12} />
-                <span>Step 3: Verify Live Vultr VM</span>
+                <span>Step 3: Verify Vultr VM (Fires Live Inference Call)</span>
               </button>
             </div>
           </div>
@@ -785,7 +785,75 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
 
             {/* Right Column: 3-Tab Result Inspector */}
             <section className="panel-card" aria-label="Execution Result Inspector">
-              {!receipt && !runtimeError ? (
+              {isLoading ? (
+                <div className="panel-body" style={{ padding: '32px 24px' }}>
+                  <div
+                    className="verdict-hero"
+                    style={{
+                      border: '1px solid var(--accent-cyan)',
+                      background: 'rgba(14, 165, 233, 0.08)',
+                    }}
+                  >
+                    <div className="verdict-top">
+                      <span
+                        className="verdict-badge"
+                        style={{ background: 'var(--accent-cyan)', color: '#04130d' }}
+                      >
+                        EXECUTING LIVE ON VULTR VM (45.32.110.141)
+                      </span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-cyan)' }}>
+                        Step {Math.min(6, activeStageIdx + 1)} of 6 Active...
+                      </span>
+                    </div>
+                    <h2 className="verdict-title">
+                      <RefreshCw size={20} color="var(--accent-cyan)" />
+                      <span>
+                        Spawning Disposable Container &amp; Calling Vultr Serverless Inference...
+                      </span>
+                    </h2>
+                    <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '13px' }}>
+                      Previous receipt cleared while your new task runs on <code>45.32.110.141</code>. A fresh container ID and new Ed25519 signature will appear below upon completion.
+                    </p>
+                  </div>
+
+                  <div className="timeline-box">
+                    <div className="timeline-header">
+                      <div className="section-label">
+                        <span>LIVE 6-STAGE EXECUTION PROGRESS</span>
+                      </div>
+                    </div>
+                    <div className="timeline-list">
+                      {[
+                        '1. Pre-Flight Safety Gate (nemotron-3.5-content-safety)',
+                        '2. Task Planning & Policy Scan (deepseek-v4.1-flash-1017)',
+                        '3. Ephemeral Docker Sandbox Spawn (uid=65534)',
+                        '4. Contained Execution & Artifact Harvest',
+                        '5. Host Deterministic Checks & Qwen 3.8 Audit',
+                        '6. Container Teardown (docker rm -f) & Ed25519 Signing',
+                      ].map((label, idx) => {
+                        const isDone = idx < activeStageIdx;
+                        const isCurr = idx === activeStageIdx;
+                        return (
+                          <div key={idx} className="timeline-row">
+                            <div className="timeline-row-main">
+                              <span className="timeline-step-title" style={{ color: isCurr ? 'var(--accent-cyan)' : undefined }}>
+                                {label}
+                              </span>
+                              <span
+                                className={`timeline-status ${
+                                  isDone ? 'passed' : isCurr ? 'healed' : ''
+                                }`}
+                              >
+                                {isDone ? 'Completed ✓' : isCurr ? 'Running now...' : 'Queued'}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : !receipt && !runtimeError ? (
                 <div className="panel-body" style={{ padding: '28px 24px' }}>
                   <div className="section-label" style={{ color: 'var(--accent-emerald)' }}>
                     <ShieldCheck size={16} />
@@ -1378,14 +1446,77 @@ print("✓ Ed25519 signature verified against Vultr Orchestrator public key")`
                   <RefreshCw size={14} />
                   <span>
                     {probingVultr
-                      ? 'Probing Vultr VM & Inference API...'
-                      : 'Run Live Vultr Infrastructure Probe (/api/vultr-proof)'}
+                      ? 'Firing Live Serverless Inference Call on Vultr...'
+                      : 'Trigger Live Serverless Inference Call & VM Probe (/api/vultr-proof)'}
                   </span>
                 </button>
               </div>
             </div>
 
             <div className="panel-body">
+              {/* Live Call Summary Cards when vultrProofData is available */}
+              {vultrProofData && (vultrProofData as { liveInferenceCall?: Record<string, unknown> }).liveInferenceCall && (
+                <div
+                  className="policy-box"
+                  style={{
+                    borderColor: 'var(--accent-emerald)',
+                    background: 'rgba(16, 185, 129, 0.08)',
+                  }}
+                >
+                  <div className="field-label">
+                    <span style={{ color: 'var(--accent-emerald)', fontWeight: 700 }}>
+                      ✓ FRESH VULTR SERVERLESS INFERENCE CALL COMPLETED AT{' '}
+                      {String((vultrProofData as { verifiedAt?: string }).verifiedAt || '')}
+                    </span>
+                    <span>Endpoint: https://api.vultrinference.com/v1/chat/completions</span>
+                  </div>
+                  <div className="verdict-pillars" style={{ marginTop: '4px' }}>
+                    <div className="verdict-pillar">
+                      <div className="verdict-pillar-label">Live Completion ID &amp; Fingerprint</div>
+                      <div className="verdict-pillar-val" style={{ color: 'var(--accent-cyan)', fontSize: '12px' }}>
+                        {String(
+                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                            .completionId as string) || 'N/A'
+                        )}{' '}
+                        ({String(
+                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                            .systemFingerprint as string) || ''
+                        )})
+                      </div>
+                    </div>
+                    <div className="verdict-pillar">
+                      <div className="verdict-pillar-label">Inference Model &amp; Latency</div>
+                      <div className="verdict-pillar-val" style={{ color: 'var(--accent-emerald)', fontSize: '12px' }}>
+                        {String(
+                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                            .model as string) || 'glm-5.3-flash'
+                        )}{' '}
+                        ·{' '}
+                        {String(
+                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                            .latencyMs as number) || 0
+                        )}{' '}
+                        ms
+                      </div>
+                    </div>
+                    <div className="verdict-pillar">
+                      <div className="verdict-pillar-label">Token Usage (Prompt / Completion)</div>
+                      <div className="verdict-pillar-val" style={{ fontSize: '12px' }}>
+                        {String(
+                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                            .promptTokens as number) || 0
+                        )}{' '}
+                        prompt +{' '}
+                        {String(
+                          ((vultrProofData as { liveInferenceCall: Record<string, unknown> }).liveInferenceCall
+                            .completionTokens as number) || 0
+                        )}{' '}
+                        completion tokens
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {/* Direct Answer to Reviewer Question #1: What runs on Vultr vs Vercel */}
               <div className="verdict-pillars">
                 <div className="verdict-pillar" style={{ borderColor: 'var(--accent-emerald)' }}>
